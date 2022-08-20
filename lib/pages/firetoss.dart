@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:drag_and_drop_windows/drag_and_drop_windows.dart';
 import 'package:file_icon/file_icon.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:fire/main.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
@@ -42,17 +43,21 @@ class _FireTossPageState extends State<FireTossPage>
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
-    subscription = dropEventStream.listen((paths) {
-      setState(() {
-        files.addAll(paths);
+    if (Platform.isWindows) {
+      subscription = dropEventStream.listen((paths) {
+        setState(() {
+          files.addAll(paths);
+        });
       });
-    });
+    }
     super.initState();
   }
 
   @override
   void dispose() {
-    subscription.cancel();
+    if (Platform.isWindows) {
+      subscription.cancel();
+    }
     super.dispose();
   }
 
@@ -102,32 +107,46 @@ class _FireTossPageState extends State<FireTossPage>
         iconData: Icons.send,
         backGroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          itemCount: files.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 7,
-            crossAxisSpacing: 10,
+      body: GestureDetector(
+        onTap: () async {
+          FilePickerResult? result =
+              await FilePicker.platform.pickFiles(allowMultiple: true);
+
+          if (result != null) {
+            setState(() {
+              files.addAll(result.paths.map((e) => e!));
+            });
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.builder(
+            itemCount: files.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: MediaQuery.of(context).size.width < 700 ? 3 : 7,
+              crossAxisSpacing: 0,
+            ),
+            itemBuilder: (BuildContext context, int index) {
+              return Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FileIcon(
+                      files[index],
+                      size: 100,
+                    ),
+                    Text(
+                        File(files[index])
+                            .path
+                            .replaceAll(File(files[index]).parent.path, "")
+                            .substring(1),
+                        overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              );
+            },
           ),
-          itemBuilder: (BuildContext context, int index) {
-            return Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FileIcon(
-                    files[index],
-                    size: 100,
-                  ),
-                  Text(
-                      File(files[index]).path.replaceAll(
-                          "${File(files[index]).parent.path}\\", ""),
-                      overflow: TextOverflow.ellipsis),
-                ],
-              ),
-            );
-          },
         ),
       ),
     );
@@ -187,7 +206,8 @@ class _FireTossPageState extends State<FireTossPage>
                   context: context,
                   builder: (context) => AlertDialog(
                     title: const Text("잠시만요!"),
-                    content: Text("오류가 발생했어요. (메시지: ${e.response!.data["message"]})"),
+                    content: Text(
+                        "오류가 발생했어요. (메시지: ${e.response!.data["message"]})"),
                     actions: [
                       ElevatedButton(
                         onPressed: () {
