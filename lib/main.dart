@@ -1,13 +1,15 @@
-import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:developer';
 
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:fire/pages/firetoss.dart';
 import 'package:fire/pages/lobby.dart';
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart';
 import 'package:internet_file/internet_file.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socket_io_client/socket_io_client.dart';
+import 'package:uuid/uuid.dart';
 
 late Socket socket;
 
@@ -17,14 +19,12 @@ void main(List<String> arguments) async {
     OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
         .build(),
   );
+  final prefs = await SharedPreferences.getInstance();
+  String address = prefs.getString("address") ?? const Uuid().v4();
 
+  log(address);
   socket.onConnect((_) {
-    if (Platform.isAndroid) {
-      socket.emit('login', {"device": "Sihu's Awesome Phone", "userId": "a"});
-    } else if (Platform.isWindows) {
-      socket
-          .emit('login', {"device": "Sihu's Awesome Computer", "userId": "a"});
-    }
+    socket.emit('login', {"address": address});
   });
 
   if (arguments.isNotEmpty) {
@@ -65,7 +65,9 @@ void main(List<String> arguments) async {
       List<String> spl = value.split('/');
       String name = spl[spl.length - 1];
       name = name.substring(0, name.length - 13);
-      File("${directory.path}/$name")..createSync(recursive: true)..writeAsBytesSync(bytes.toList());
+      File("${directory.path}/$name")
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(bytes.toList());
     }
   });
 
@@ -77,4 +79,6 @@ void main(List<String> arguments) async {
       home: const LobbyPage(),
     ),
   );
+
+  // BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }

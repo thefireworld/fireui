@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -69,28 +68,34 @@ class _FireTossPageState extends State<FireTossPage>
       floatingActionButton: FloatingActionBubble(
         items: [
           Bubble(
-            title: "Sihu's Awesome Computer",
-            iconColor: Colors.black,
-            bubbleColor: Colors.white,
-            icon: Icons.phone_android,
-            titleStyle: const TextStyle(fontSize: 16, color: Colors.black),
-            onPress: () {
-              _animationController.reverse();
-              List<String> fileData = [];
-              for (var file in files) {
-                base64Encode(File(file).readAsBytesSync().toList());
-              }
-            },
-          ),
-          Bubble(
-            title: "Sihu's Awesome Phone",
+            title: "Others..",
             iconColor: Colors.black,
             bubbleColor: Colors.white,
             icon: Icons.phone_android,
             titleStyle: const TextStyle(fontSize: 16, color: Colors.black),
             onPress: () async {
               _animationController.reverse();
-              await sendFile(context);
+              TextEditingController textField = TextEditingController();
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('주소를 입력해주세요.'),
+                      content: TextField(
+                        controller: textField,
+                      ),
+                      actions: <Widget>[
+                        ElevatedButton(
+                          child: const Text('OK'),
+                          onPressed: () async {
+                            Navigator.pop(context);
+
+                            await sendFile(context, textField.text);
+                          },
+                        ),
+                      ],
+                    );
+                  });
             },
           ),
         ],
@@ -152,7 +157,7 @@ class _FireTossPageState extends State<FireTossPage>
     );
   }
 
-  Future<void> sendFile(BuildContext context) async {
+  Future<void> sendFile(BuildContext context, String address) async {
     int startTime = DateTime.now().millisecondsSinceEpoch;
     List<String> fileData = [];
     for (int i = 1; i <= files.length; i++) {
@@ -226,8 +231,7 @@ class _FireTossPageState extends State<FireTossPage>
     }
     socket.emit("toss", {
       "files": fileData,
-      "receiverUserId": "a",
-      "receiverDeviceName": "Sihu's Awesome Phone"
+      "to": address,
     });
     int endTime = DateTime.now().millisecondsSinceEpoch;
     DateTime time =
