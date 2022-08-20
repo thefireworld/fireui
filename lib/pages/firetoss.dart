@@ -9,7 +9,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fire/main.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
-import 'package:sn_progress_dialog/completed.dart';
 import 'package:sn_progress_dialog/progress_dialog.dart';
 
 class FireTossPage extends StatefulWidget {
@@ -77,25 +76,28 @@ class _FireTossPageState extends State<FireTossPage>
               _animationController.reverse();
               TextEditingController textField = TextEditingController();
               showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('주소를 입력해주세요.'),
-                      content: TextField(
-                        controller: textField,
-                      ),
-                      actions: <Widget>[
-                        ElevatedButton(
-                          child: const Text('OK'),
-                          onPressed: () async {
-                            Navigator.pop(context);
+                context: context,
+                builder: (ctx) {
+                  return AlertDialog(
+                    title: const Text('주소를 입력해주세요.'),
+                    content: TextField(
+                      controller: textField,
+                    ),
+                    actions: [
+                      ElevatedButton(
+                        child: const Text('OK'),
+                        onPressed: () async {
+                          Navigator.pop(ctx);
 
-                            await sendFile(context, textField.text);
-                          },
-                        ),
-                      ],
-                    );
-                  });
+                          await sendFile(context, textField.text);
+                          if (!mounted) return;
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         ],
@@ -169,10 +171,6 @@ class _FireTossPageState extends State<FireTossPage>
       pd.show(
         max: 100,
         msg: 'Sending files... ($i/${files.length})',
-        completed: Completed(
-          completedMsg: "Sending Completed! ($i/${files.length})",
-          closedDelay: i == files.length ? 2500 : 0,
-        ),
       );
       try {
         final response = await dio.post(
@@ -183,8 +181,6 @@ class _FireTossPageState extends State<FireTossPage>
           },
         );
         fileData.add(response.data["url"]);
-        await Future.delayed(
-            Duration(milliseconds: i == files.length ? 2500 : 0));
       } catch (e) {
         if (e is DioError) {
           if (e.response!.data["status"] == "err") {
@@ -237,8 +233,5 @@ class _FireTossPageState extends State<FireTossPage>
     DateTime time =
         DateTime.fromMillisecondsSinceEpoch(endTime - startTime - 2500);
     log("걸린시간: ${time.hour - 9}시간 ${time.minute}분 ${time.second}초");
-
-    if (!mounted) return;
-    Navigator.pop(context);
   }
 }

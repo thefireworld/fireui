@@ -1,28 +1,28 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:developer';
 
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:fire/pages/firetoss.dart';
 import 'package:fire/pages/lobby.dart';
+import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_file/internet_file.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:socket_io_client/socket_io_client.dart';
-import 'package:uuid/uuid.dart';
 
 late Socket socket;
 
 void main(List<String> arguments) async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   socket = io(
     'http://59.11.174.229:3000',
     OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
         .build(),
   );
-  final prefs = await SharedPreferences.getInstance();
-  String address = prefs.getString("address") ?? const Uuid().v4();
 
-  log(address);
+  String address = await getAddress();
   socket.onConnect((_) {
     socket.emit('login', {"address": address});
   });
@@ -48,7 +48,12 @@ void main(List<String> arguments) async {
   }
 
   socket.on('tossed', (data) async {
-    Directory directory = (await DownloadsPathProvider.downloadsDirectory)!;
+    Directory directory;
+    if (Platform.isAndroid || Platform.isIOS) {
+      directory = (await DownloadsPathProvider.downloadsDirectory)!;
+    } else {
+      directory = (await getDownloadsDirectory())!;
+    }
     for (var value in data) {
       // await FlutterDownloader.enqueue(
       //   url: value,

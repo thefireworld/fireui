@@ -1,5 +1,7 @@
 import 'package:fire/pages/firetoss.dart';
+import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class LobbyPage extends StatefulWidget {
   const LobbyPage({Key? key}) : super(key: key);
@@ -9,9 +11,60 @@ class LobbyPage extends StatefulWidget {
 }
 
 class _LobbyPageState extends State<LobbyPage> {
+  String? address;
+
+  @override
+  void initState() {
+    getAddress().then((value) {
+      setState(() {
+        address = value;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: address == null
+          ? Container()
+          : IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("이 기기의 주소"),
+                      content: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              width: 200,
+                              height: 200,
+                              child: QrImage(
+                                data: address!,
+                                version: QrVersions.auto,
+                                size: 200.0,
+                              ),
+                            ),
+                            Text(address!),
+                          ],
+                        ),
+                      ),
+                      actions: <Widget>[
+                        ElevatedButton(
+                          child: const Text('OK'),
+                          onPressed: () async {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              icon: const Icon(Icons.qr_code_2),
+            ),
       body: Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
