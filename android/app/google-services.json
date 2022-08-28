@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "253019278159",
+    "project_id": "interlocking-fire",
+    "storage_bucket": "interlocking-fire.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:253019278159:android:659dabc00bc9e43602533a",
+        "android_client_info": {
+          "package_name": "wtf.iamsihu.fire"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "253019278159-80m2ji8a4kfrm29tgsqqndht88o2pged.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCXAxRnJlwPzTe_2UYSqM22Qc-Qp9BdSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "253019278159-80m2ji8a4kfrm29tgsqqndht88o2pged.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
