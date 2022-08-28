@@ -7,8 +7,10 @@ import 'package:drag_and_drop_windows/drag_and_drop_windows.dart';
 import 'package:file_icon/file_icon.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fire/main.dart';
+import 'package:fire/utils.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
+import 'package:qrscan/qrscan.dart';
 import 'package:sn_progress_dialog/progress_dialog.dart';
 
 class FireTossPage extends StatefulWidget {
@@ -67,10 +69,10 @@ class _FireTossPageState extends State<FireTossPage>
       floatingActionButton: FloatingActionBubble(
         items: [
           Bubble(
-            title: "Others..",
+            title: "디바이스 찾기..",
             iconColor: Colors.black,
             bubbleColor: Colors.white,
-            icon: Icons.phone_android,
+            icon: Icons.devices,
             titleStyle: const TextStyle(fontSize: 16, color: Colors.black),
             onPress: () async {
               _animationController.reverse();
@@ -82,8 +84,26 @@ class _FireTossPageState extends State<FireTossPage>
                     title: const Text('주소를 입력해주세요.'),
                     content: TextField(
                       controller: textField,
+                      maxLength: 14,
+                      decoration: const InputDecoration(
+                        hintText: "ABCD-EFGH-1234",
+                        labelText: "Address",
+                      ),
+                      inputFormatters: [
+                        UpperCaseTextFormatter(),
+                        DashTextFormatter(),
+                      ],
                     ),
                     actions: [
+                      ElevatedButton(
+                        onPressed: Platform.isAndroid || Platform.isIOS
+                            ? () async {
+                                String? code = await scan();
+                                textField.text = code ?? "";
+                              }
+                            : null,
+                        child: const Text('QR코드 스캔하기'),
+                      ),
                       ElevatedButton(
                         child: const Text('OK'),
                         onPressed: () async {
@@ -163,10 +183,13 @@ class _FireTossPageState extends State<FireTossPage>
     int startTime = DateTime.now().millisecondsSinceEpoch;
     List<String> fileData = [];
     for (int i = 1; i <= files.length; i++) {
-      String filePath = files[i - 1];
+      File file = File(files[i - 1]);
       var dio = Dio();
-      var formData =
-          FormData.fromMap({'file': await MultipartFile.fromFile(filePath)});
+      var formData = FormData.fromMap({
+        'file': MultipartFile.fromBytes(
+            encryptFile(file.readAsBytesSync(), "awesome password"),
+            filename: file.path.replaceFirst(file.parent.path, "").substring(1))
+      });
       ProgressDialog pd = ProgressDialog(context: context);
       pd.show(
         max: 100,
@@ -179,7 +202,28 @@ class _FireTossPageState extends State<FireTossPage>
           onSendProgress: (rec, total) {
             pd.update(value: ((rec.toDouble() / total) * 100).toInt());
           },
+          options: Options(
+            headers: {
+              "authorization": "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
+            },
+          ),
         );
+        if (response.statusCode == 401) {
+          await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text("ERROR"),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
+          );
+        }
         fileData.add(response.data["url"]);
       } catch (e) {
         if (e is DioError) {
@@ -230,8 +274,7 @@ class _FireTossPageState extends State<FireTossPage>
       "to": address,
     });
     int endTime = DateTime.now().millisecondsSinceEpoch;
-    DateTime time =
-        DateTime.fromMillisecondsSinceEpoch(endTime - startTime - 2500);
+    DateTime time = DateTime.fromMillisecondsSinceEpoch(endTime - startTime);
     log("걸린시간: ${time.hour - 9}시간 ${time.minute}분 ${time.second}초");
   }
 }
