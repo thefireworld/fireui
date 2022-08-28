@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -7,6 +6,7 @@ import 'package:fire/pages/firetoss.dart';
 import 'package:fire/pages/lobby.dart';
 import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:internet_file/internet_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -15,6 +15,8 @@ late Socket socket;
 
 void main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // await dotenv.load(fileName: ".env");
 
   socket = io(
     'http://59.11.174.229:3000',
@@ -25,6 +27,31 @@ void main(List<String> arguments) async {
   String address = await getAddress();
   socket.onConnect((_) {
     socket.emit('login', {"address": address});
+  });
+
+  socket.on('duplicate address', (data) async {
+    // showDialog(
+    //   context: context,
+    //   builder: (context) {
+    //     return AlertDialog(
+    //       title: const Text("경고!"),
+    //       content: const SingleChildScrollView(
+    //         child: Text("다른 기기에서 사용하고있는 주소입니다. 주소를 변경합니다."),
+    //       ),
+    //       actions: <Widget>[
+    //         ElevatedButton(
+    //           child: const Text('OK'),
+    //           onPressed: () async {
+    //             Navigator.pop(context);
+    //           },
+    //         ),
+    //       ],
+    //     );
+    //   },
+    // );
+    socket.disconnect();
+    address = await getAddress(reset: true);
+    socket.connect();
   });
 
   if (arguments.isNotEmpty) {
@@ -54,25 +81,23 @@ void main(List<String> arguments) async {
     } else {
       directory = (await getDownloadsDirectory())!;
     }
-    for (var value in data) {
-      // await FlutterDownloader.enqueue(
-      //   url: value,
-      //   savedDir: directory.path,
-      //   showNotification: true,
-      //   openFileFromNotification: true,
-      // );
-      final Uint8List bytes = await InternetFile.get(
-        "http://$value",
-        progress: (receivedLength, contentLength) {
-          final percentage = receivedLength / contentLength * 100;
-        },
-      );
-      List<String> spl = value.split('/');
-      String name = spl[spl.length - 1];
-      name = name.substring(0, name.length - 13);
+    List<String> spl = data[0].split('/');
+    String name = spl[spl.length - 1];
+    name = name.substring(0, name.length - 13);
+    final clickedButton = await FlutterPlatformAlert.showCustomAlert(
+      windowTitle: '다른 기기에서 파일이 전송되었습니다.',
+      text: '파일 이름: $name',
+      positiveButtonTitle: "승인",
+      negativeButtonTitle: "거부",
+    );
+    if (clickedButton == CustomButton.positiveButton) {
+      final Uint8List bytes = await InternetFile.get("http://${data[0]}",
+          progress: (receivedLength, contentLength) {
+        final percentage = receivedLength / contentLength * 100;
+      });
       File("${directory.path}/$name")
         ..createSync(recursive: true)
-        ..writeAsBytesSync(bytes.toList());
+        ..writeAsBytesSync(decryptFile(bytes, "awesome password").toList());
     }
   });
 
