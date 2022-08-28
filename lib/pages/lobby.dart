@@ -1,3 +1,4 @@
+import 'package:fire/main.dart';
 import 'package:fire/pages/firetoss.dart';
 import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
@@ -12,12 +13,18 @@ class LobbyPage extends StatefulWidget {
 
 class _LobbyPageState extends State<LobbyPage> {
   String? address;
+  String? deviceName;
 
   @override
   void initState() {
     getAddress().then((value) {
       setState(() {
         address = value;
+      });
+    });
+    getDeviceName().then((value) {
+      setState(() {
+        deviceName = value;
       });
     });
     super.initState();
@@ -48,6 +55,7 @@ class _LobbyPageState extends State<LobbyPage> {
                               ),
                             ),
                             Text(address!),
+                            Text(deviceName != null ? deviceName! : ""),
                           ],
                         ),
                       ),
