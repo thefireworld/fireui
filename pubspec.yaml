@@ -51,6 +51,11 @@ dependencies:
   shared_preferences: ^2.0.15
   flutter_local_notifications: ^9.8.0+1
   qr_flutter: ^4.0.0
+  masked_text_field: ^1.0.1
+  device_info_plus: ^4.1.2
+  qrscan: ^0.3.3
+  flutter_dotenv: ^5.0.2
+  flutter_platform_alert: ^0.3.0
 
 dev_dependencies:
   flutter_test:
@@ -75,9 +80,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
