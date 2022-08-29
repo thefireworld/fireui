@@ -1,70 +1,43 @@
 import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:platform_device_id/platform_device_id.dart';
 
-class UpperCaseTextFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    return TextEditingValue(
-      text: newValue.text.toUpperCase(),
-      selection: newValue.selection,
-    );
-  }
-}
-
-class DashTextFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    if (newValue.text.length == 4 || newValue.text.length == 9) {
-      TextSelection selection = TextSelection(
-          baseOffset: newValue.selection.baseOffset + 1,
-          extentOffset: newValue.selection.extentOffset + 1);
-      return TextEditingValue(
-        text: "${newValue.text}-",
-        selection: selection,
-      );
-    } else {
-      return newValue;
-    }
-  }
-}
-
-String chars = 'ABCDEFGHJKMNOPQRSTUVWXYZ1234567890';
+// class UpperCaseTextFormatter extends TextInputFormatter {
+//   @override
+//   TextEditingValue formatEditUpdate(
+//       TextEditingValue oldValue, TextEditingValue newValue) {
+//     return TextEditingValue(
+//       text: newValue.text.toUpperCase(),
+//       selection: newValue.selection,
+//     );
+//   }
+// }
+//
+// class DashTextFormatter extends TextInputFormatter {
+//   @override
+//   TextEditingValue formatEditUpdate(
+//       TextEditingValue oldValue, TextEditingValue newValue) {
+//     if (newValue.text.length == 4 || newValue.text.length == 9) {
+//       TextSelection selection = TextSelection(
+//           baseOffset: newValue.selection.baseOffset + 1,
+//           extentOffset: newValue.selection.extentOffset + 1);
+//       return TextEditingValue(
+//         text: "${newValue.text}-",
+//         selection: selection,
+//       );
+//     } else {
+//       return newValue;
+//     }
+//   }
+// }
+//
+// String chars = 'ABCDEFGHJKMNOPQRSTUVWXYZ1234567890';
 
 Future<String> getAddress({bool reset = false}) async {
-  final prefs = await SharedPreferences.getInstance();
-  if (!prefs.containsKey("address") || reset) {
-    String builder = "";
-    builder += String.fromCharCodes(
-      Iterable.generate(
-        4,
-        (_) => chars.codeUnitAt(Random().nextInt(chars.length)),
-      ),
-    );
-    builder += "-";
-    builder += String.fromCharCodes(
-      Iterable.generate(
-        4,
-        (_) => chars.codeUnitAt(Random().nextInt(chars.length)),
-      ),
-    );
-    builder += "-";
-    builder += String.fromCharCodes(
-      Iterable.generate(
-        4,
-        (_) => chars.codeUnitAt(Random().nextInt(chars.length)),
-      ),
-    );
-    prefs.setString("address", builder);
-  }
-  String address = prefs.getString("address")!;
-  return address;
+  return (await PlatformDeviceId.getDeviceId)!;
 }
 
 Future<String?> getDeviceName() async {

@@ -84,15 +84,9 @@ class _FireTossPageState extends State<FireTossPage>
                     title: const Text('주소를 입력해주세요.'),
                     content: TextField(
                       controller: textField,
-                      maxLength: 14,
                       decoration: const InputDecoration(
-                        hintText: "ABCD-EFGH-1234",
                         labelText: "Address",
                       ),
-                      inputFormatters: [
-                        UpperCaseTextFormatter(),
-                        DashTextFormatter(),
-                      ],
                     ),
                     actions: [
                       ElevatedButton(
