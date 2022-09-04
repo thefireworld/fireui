@@ -37,7 +37,7 @@ import 'package:platform_device_id/platform_device_id.dart';
 // String chars = 'ABCDEFGHJKMNOPQRSTUVWXYZ1234567890';
 
 Future<String> getAddress({bool reset = false}) async {
-  return (await PlatformDeviceId.getDeviceId)!;
+  return (await PlatformDeviceId.getDeviceId)!.trim();
 }
 
 Future<String?> getDeviceName() async {
