@@ -5,6 +5,9 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   drag_and_drop_windows
   flutter_platform_alert
+  platform_device_id_windows
+  screen_retriever
+  window_manager
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

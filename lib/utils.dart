@@ -2,43 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/services.dart';
-import 'package:platform_device_id/platform_device_id.dart';
 
-// class UpperCaseTextFormatter extends TextInputFormatter {
-//   @override
-//   TextEditingValue formatEditUpdate(
-//       TextEditingValue oldValue, TextEditingValue newValue) {
-//     return TextEditingValue(
-//       text: newValue.text.toUpperCase(),
-//       selection: newValue.selection,
-//     );
-//   }
-// }
-//
-// class DashTextFormatter extends TextInputFormatter {
-//   @override
-//   TextEditingValue formatEditUpdate(
-//       TextEditingValue oldValue, TextEditingValue newValue) {
-//     if (newValue.text.length == 4 || newValue.text.length == 9) {
-//       TextSelection selection = TextSelection(
-//           baseOffset: newValue.selection.baseOffset + 1,
-//           extentOffset: newValue.selection.extentOffset + 1);
-//       return TextEditingValue(
-//         text: "${newValue.text}-",
-//         selection: selection,
-//       );
-//     } else {
-//       return newValue;
-//     }
-//   }
-// }
-//
-// String chars = 'ABCDEFGHJKMNOPQRSTUVWXYZ1234567890';
-
-Future<String> getAddress({bool reset = false}) async {
-  return (await PlatformDeviceId.getDeviceId)!.trim();
-}
+String address = "err";
 
 Future<String?> getDeviceName() async {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
