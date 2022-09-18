@@ -1,7 +1,9 @@
+import 'package:fire/main.dart';
 import 'package:fire/pages/firetoss.dart';
 import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 class LobbyPage extends StatefulWidget {
   const LobbyPage({Key? key}) : super(key: key);
@@ -19,6 +21,10 @@ class _LobbyPageState extends State<LobbyPage> {
       setState(() {
         deviceName = value;
       });
+    });
+
+    socket.onConnect((_) {
+      setState(() {});
     });
     super.initState();
   }

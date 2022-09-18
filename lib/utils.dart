@@ -5,6 +5,10 @@ import 'package:device_info_plus/device_info_plus.dart';
 
 String address = "err";
 
+String fireDirectServer = "https://pc.iamsihu.wtf:3000";
+bool fireDirectConnected = false;
+String fireCloudServer = "https://pc.iamsihu.wtf:3001";
+
 Future<String?> getDeviceName() async {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 

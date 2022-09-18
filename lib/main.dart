@@ -24,58 +24,48 @@ void main(List<String> arguments) async {
       ignoreSsl: true,
     );
     FlutterDownloader.registerCallback(callback);
-  }
 
-  socket = io(
-    'http://59.11.174.229:3000',
-    OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
-        .build(),
-  );
-  String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
-  socket.onConnect((_) {
-    log("connected!");
-    socket.emit('login', {"address": deviceId});
-  });
-  socket.on("new address", (data) {
-    address = data;
-  });
+    socket = io(
+      fireDirectServer,
+      OptionBuilder().setTransports(['websocket']).build(),
+    );
+    String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
+    socket.onConnect((_) {
+      log("connected!");
+      fireDirectConnected = true;
+      socket.emit('login', {"address": deviceId});
+    });
+    socket.on("new address", (data) {
+      address = data;
+    });
 
-  // Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-  //
-  // Workmanager().registerPeriodicTask(
-  //   "fire-toss-receiver",
-  //   "FireTossReceiver",
-  //   frequency: const Duration(seconds: 5),
-  // );
-
-  if (arguments.isNotEmpty) {
-    if (arguments[0] == "toss") {
-      if (arguments.length > 1) {
-        runApp(
-          MaterialApp(
-            theme: ThemeData(
-              useMaterial3: true,
+    if (arguments.isNotEmpty) {
+      if (arguments[0] == "toss") {
+        if (arguments.length > 1) {
+          runApp(
+            MaterialApp(
+              theme: ThemeData(
+                useMaterial3: true,
+              ),
+              home: FireTossPage(
+                defaultFiles: [
+                  arguments[1],
+                ],
+              ),
             ),
-            home: FireTossPage(
-              defaultFiles: [
-                arguments[1],
-              ],
-            ),
-          ),
-        );
-        return;
+          );
+          return;
+        }
       }
     }
-  }
 
-  initializeFireToss();
+    initializeFireToss();
 
-  runApp(
-    MaterialApp(
+    runApp(MaterialApp(
       theme: ThemeData(
         useMaterial3: true,
       ),
       home: const LobbyPage(),
-    ),
-  );
+    ));
+  }
 }
