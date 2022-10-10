@@ -1,14 +1,16 @@
+import 'package:fire/pages/lobby.dart';
+import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginCodePage extends StatefulWidget {
+  const LoginCodePage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginCodePage> createState() => _LoginCodePageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginCodePageState extends State<LoginCodePage> {
   final _loginCodeController = TextEditingController();
 
   @override
@@ -97,6 +99,36 @@ class _LoginPageState extends State<LoginPage> {
               child: const Text("어떻게 로그인하나요?"),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () async {
+            if ((await signInWithGoogle()).credential != null) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LobbyPage(),
+                ),
+              );
+            }
+          },
+          child: const Text("로그인"),
         ),
       ),
     );
