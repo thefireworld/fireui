@@ -282,7 +282,7 @@ class _FireTossPageState extends State<FireTossPage>
     );
     try {
       final response = await dio.post(
-        'http://pc.iamsihu.wtf:3000/upload',
+        'http://$fireServerUrl/upload',
         data: formData,
         onSendProgress: (rec, total) {},
         options: Options(

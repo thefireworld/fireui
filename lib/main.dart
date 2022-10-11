@@ -32,7 +32,7 @@ void main(List<String> arguments) async {
 
   String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
   socket = io(
-    'http://59.11.174.229:3000',
+    'http://$fireServerUrl',
     OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
         .build(),
   );

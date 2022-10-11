@@ -10,6 +10,8 @@ String address = "err";
 String fireServerUrl = "pc.iamsihu.wtf:3000";
 bool fireServerConnected = false;
 
+String? userUid;
+
 Future<UserCredential> signInWithGoogle() async {
   // Trigger the authentication flow
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();

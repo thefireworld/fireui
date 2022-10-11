@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:fire/pages/lobby.dart';
 import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
@@ -54,14 +55,31 @@ class _LoginCodePageState extends State<LoginCodePage> {
                   color: const Color.fromRGBO(234, 239, 243, 1),
                 ),
               ),
-              validator: (s) {
-                return s == '222332' ? null : '잘못된 코드입니다.';
-              },
               pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
               showCursor: false,
               autofocus: true,
-              length: 6,
-              onCompleted: (pin) => print(pin),
+              onCompleted: (code) {
+                Dio()
+                    .get('http://$fireServerUrl/logincode/$code',
+                        options: Options(
+                          headers: {
+                            "authorization":
+                                "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
+                          },
+                        ))
+                    .then((response) {
+                  userUid = response.data["userUid"];
+
+                  //TODO 유저 데이터 가져오기
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LobbyPage(),
+                    ),
+                  );
+                });
+              },
             ),
             const SizedBox(height: 20),
             MaterialButton(
@@ -78,15 +96,14 @@ class _LoginCodePageState extends State<LoginCodePage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
-                          Text("1. 스마트폰에서 Fire 앱을 설치하세요."),
+                          Text("1. 스마트폰, Mac에서 Fire를 설치한 후 로그인합니다."),
                           Text("2. 오른쪽 아래 '계정' 버튼에서 로그인 코드를 클릭하세요."),
                           Text("3. 화면에 표시되는 코드를 이 디바이스에 입력하세요."),
-                          Text("[!] 모바일에서 '완료'를 누르면 코드가 삭제됩니다."),
                         ],
                       ),
                       actions: <Widget>[
                         ElevatedButton(
-                          child: Text("확인"),
+                          child: const Text("확인"),
                           onPressed: () {
                             Navigator.pop(context);
                           },
@@ -119,14 +136,20 @@ class _LoginPageState extends State<LoginPage> {
       body: Center(
         child: ElevatedButton(
           onPressed: () async {
-            if ((await signInWithGoogle()).credential != null) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LobbyPage(),
-                ),
-              );
-            }
+            signInWithGoogle().then((credential) {
+              if (credential.credential != null) {
+                userUid = credential.user!.uid;
+
+                //TODO 유저 데이터 가져오기
+
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LobbyPage(),
+                  ),
+                );
+              }
+            });
           },
           child: const Text("로그인"),
         ),

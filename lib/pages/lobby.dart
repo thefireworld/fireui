@@ -2,8 +2,8 @@ import 'package:fire/main.dart';
 import 'package:fire/pages/firetoss.dart';
 import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:dio/dio.dart';
 
 class LobbyPage extends StatefulWidget {
   const LobbyPage({Key? key}) : super(key: key);
@@ -33,26 +33,26 @@ class _LobbyPageState extends State<LobbyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: IconButton(
-        onPressed: () {
+        onPressed: () async {
+          var dio = Dio();
+          final response = await dio.post(
+            'http://$fireServerUrl/logincode/$userUid',
+            options: Options(
+              headers: {
+                "authorization": "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
+              },
+            ),
+          );
+          int code = response.data["code"];
           showDialog(
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: const Text("이 기기의 주소"),
+                title: const Text("데스크톱에서 로그인"),
                 content: SingleChildScrollView(
                   child: Column(
                     children: [
-                      SizedBox(
-                        width: 200,
-                        height: 200,
-                        child: QrImage(
-                          data: address,
-                          version: QrVersions.auto,
-                          size: 200.0,
-                        ),
-                      ),
-                      Text(address),
-                      Text(deviceName != null ? deviceName! : ""),
+                      Text("로그인코드: $code"),
                     ],
                   ),
                 ),
@@ -61,6 +61,15 @@ class _LobbyPageState extends State<LobbyPage> {
                     child: const Text('OK'),
                     onPressed: () async {
                       Navigator.pop(context);
+                      await dio.delete(
+                        'http://$fireServerUrl/logincode/$code',
+                        options: Options(
+                          headers: {
+                            "authorization":
+                                "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
+                          },
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -68,7 +77,7 @@ class _LobbyPageState extends State<LobbyPage> {
             },
           );
         },
-        icon: const Icon(Icons.qr_code_2),
+        icon: const Icon(Icons.account_circle),
       ),
       body: Center(
         child: Row(
