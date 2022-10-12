@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:fire/pages/lobby.dart';
 import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:pinput/pinput.dart';
+import 'package:social_login_buttons/social_login_buttons.dart';
 
 class LoginCodePage extends StatefulWidget {
   const LoginCodePage({Key? key}) : super(key: key);
@@ -58,27 +62,31 @@ class _LoginCodePageState extends State<LoginCodePage> {
               pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
               showCursor: false,
               autofocus: true,
-              onCompleted: (code) {
-                Dio()
-                    .get('http://$fireServerUrl/logincode/$code',
-                        options: Options(
-                          headers: {
-                            "authorization":
-                                "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
-                          },
-                        ))
-                    .then((response) {
-                  userUid = response.data["userUid"];
-
-                  //TODO 유저 데이터 가져오기
-
+              onCompleted: (code) async {
+                EasyLoading.show(status: 'loading...');
+                final response = await Dio().get(
+                  'http://$fireServerUrl/logincode/$code',
+                  options: Options(
+                    headers: {
+                      "authorization": "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
+                    },
+                  ),
+                );
+                if (response.data["userUid"] != null) {
+                  FireAccount.current =
+                      await FireAccount.getFromUid(response.data["userUid"]);
+                  EasyLoading.showToast("로그인 완료: ${FireAccount.current!.name}");
+                  // ignore: use_build_context_synchronously
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const LobbyPage(),
                     ),
                   );
-                });
+                } else {
+                  _loginCodeController.clear();
+                  EasyLoading.showToast("로그인 코드가 잘못되었습니다.");
+                }
               },
             ),
             const SizedBox(height: 20),
@@ -134,24 +142,36 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: ElevatedButton(
-          onPressed: () async {
-            signInWithGoogle().then((credential) {
+        child: SizedBox(
+          width: 254,
+          child: SocialLoginButton(
+            buttonType: SocialLoginButtonType.google,
+            onPressed: () async {
+              EasyLoading.show(status: 'loading...');
+
+              final credential = await signInWithGoogle();
               if (credential.credential != null) {
-                userUid = credential.user!.uid;
+                // try {
+                FireAccount.current =
+                    await FireAccount.getFromUid(credential.user!.uid);
 
-                //TODO 유저 데이터 가져오기
-
+                EasyLoading.showToast("로그인 완료: ${FireAccount.current!.name}");
+                // ignore: use_build_context_synchronously
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const LobbyPage(),
                   ),
                 );
+                return;
+                // } catch (e) {
+                //   throw e;
+                // }
               }
-            });
-          },
-          child: const Text("로그인"),
+
+              EasyLoading.showToast("로그인에 실패했습니다.");
+            },
+          ),
         ),
       ),
     );

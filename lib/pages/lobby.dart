@@ -2,6 +2,7 @@ import 'package:fire/main.dart';
 import 'package:fire/pages/firetoss.dart';
 import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:dio/dio.dart';
 
@@ -35,15 +36,17 @@ class _LobbyPageState extends State<LobbyPage> {
       floatingActionButton: IconButton(
         onPressed: () async {
           var dio = Dio();
+          EasyLoading.show();
           final response = await dio.post(
-            'http://$fireServerUrl/logincode/$userUid',
+            'http://$fireServerUrl/logincode/${FireAccount.current!.uid}',
             options: Options(
               headers: {
                 "authorization": "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
               },
             ),
           );
-          int code = response.data["code"];
+          EasyLoading.dismiss();
+          String code = response.data["code"];
           showDialog(
             context: context,
             builder: (context) {

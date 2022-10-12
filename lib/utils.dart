@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dio/dio.dart';
+import 'package:fire/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -10,7 +12,29 @@ String address = "err";
 String fireServerUrl = "pc.iamsihu.wtf:3000";
 bool fireServerConnected = false;
 
-String? userUid;
+class FireAccount {
+  static FireAccount? _current;
+
+  String uid;
+  String name;
+
+  FireAccount._(this.uid, this.name);
+
+  static FireAccount? get current => _current;
+
+  static set current(FireAccount? account) {
+    _current = account;
+    socket.emit("login", account?.uid);
+  }
+
+  static Future<FireAccount> getFromUid(String uid) async {
+    var dio = Dio();
+    final response = await dio.get(
+      'http://$fireServerUrl/user/$uid',
+    );
+    return FireAccount._(response.data["uid"], response.data["name"]);
+  }
+}
 
 Future<UserCredential> signInWithGoogle() async {
   // Trigger the authentication flow

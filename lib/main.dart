@@ -7,6 +7,7 @@ import 'package:fire/utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -40,11 +41,16 @@ void main(List<String> arguments) async {
   socket.onConnect((_) {
     log("connected!");
     fireServerConnected = true;
-    socket.emit('login', {"address": deviceId});
+    socket.emit('connect server', {"address": deviceId});
   });
 
   socket.on("new address", (data) {
     address = data;
+  });
+  socket.on("connect approved", (data) {
+    if (FireAccount.current != null) {
+      socket.emit("login", FireAccount.current!.uid);
+    }
   });
 
   if (arguments.isNotEmpty) {
@@ -80,6 +86,7 @@ void main(List<String> arguments) async {
         useMaterial3: true,
       ),
       home: const LoginPage(),
+      builder: EasyLoading.init(),
     ));
   } else {
     runApp(MaterialApp(
@@ -87,6 +94,7 @@ void main(List<String> arguments) async {
         useMaterial3: true,
       ),
       home: const LoginCodePage(),
+      builder: EasyLoading.init(),
     ));
   }
 }
