@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:fire/pages/lobby.dart';
 import 'package:fire/utils.dart';
@@ -63,18 +61,30 @@ class _LoginCodePageState extends State<LoginCodePage> {
               showCursor: false,
               autofocus: true,
               onCompleted: (code) async {
-                EasyLoading.show(status: 'loading...');
-                final response = await Dio().get(
-                  'http://$fireServerUrl/logincode/$code',
-                  options: Options(
-                    headers: {
-                      "authorization": "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
-                    },
-                  ),
-                );
+                EasyLoading.show();
+                Response response;
+                try {
+                  response = await Dio().get(
+                    'http://$fireServerUrl/logincode/$code',
+                    options: Options(
+                      headers: {
+                        "authorization": "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
+                      },
+                      sendTimeout: 1000,
+                    ),
+                  );
+                } catch (e) {
+                  EasyLoading.showToast("서버와 연결할 수 없어요.");
+                  return;
+                }
+
                 if (response.data["userUid"] != null) {
                   FireAccount.current =
                       await FireAccount.getFromUid(response.data["userUid"]);
+                  if (FireAccount.current == null) {
+                    EasyLoading.showToast("서버와 연결할 수 없어요.");
+                    return;
+                  }
                   EasyLoading.showToast("로그인 완료: ${FireAccount.current!.name}");
                   // ignore: use_build_context_synchronously
                   Navigator.pushReplacement(
@@ -147,26 +157,26 @@ class _LoginPageState extends State<LoginPage> {
           child: SocialLoginButton(
             buttonType: SocialLoginButtonType.google,
             onPressed: () async {
-              EasyLoading.show(status: 'loading...');
+              EasyLoading.show();
 
               final credential = await signInWithGoogle();
               if (credential.credential != null) {
-                // try {
                 FireAccount.current =
                     await FireAccount.getFromUid(credential.user!.uid);
 
-                EasyLoading.showToast("로그인 완료: ${FireAccount.current!.name}");
-                // ignore: use_build_context_synchronously
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LobbyPage(),
-                  ),
-                );
+                if (FireAccount.current == null) {
+                  EasyLoading.showToast("서버와 연결할 수 없어요.");
+                } else {
+                  EasyLoading.showToast("로그인 완료: ${FireAccount.current!.name}");
+                  // ignore: use_build_context_synchronously
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LobbyPage(),
+                    ),
+                  );
+                }
                 return;
-                // } catch (e) {
-                //   throw e;
-                // }
               }
 
               EasyLoading.showToast("로그인에 실패했습니다.");

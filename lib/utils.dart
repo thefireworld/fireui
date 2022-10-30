@@ -27,12 +27,22 @@ class FireAccount {
     socket.emit("login", account?.uid);
   }
 
-  static Future<FireAccount> getFromUid(String uid) async {
-    var dio = Dio();
-    final response = await dio.get(
-      'http://$fireServerUrl/user/$uid',
-    );
-    return FireAccount._(response.data["uid"], response.data["name"]);
+  static Future<FireAccount?> getFromUid(String uid) async {
+    try {
+      var dio = Dio();
+      final response = await dio.get(
+        'http://$fireServerUrl/user/$uid',
+        options: Options(sendTimeout: 5000),
+      );
+      return FireAccount._(response.data["uid"], response.data["name"]);
+    } catch (e) {
+      if (e is DioError) {
+        if (e.type == DioErrorType.sendTimeout) {
+          return null;
+        }
+      }
+    }
+    return null;
   }
 }
 
