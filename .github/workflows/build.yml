@@ -64,7 +64,7 @@ jobs:
         run: flutter build linux --release
 
       - run: |
-          cd build/linux
+          cd build/linux/x64
           ls
 
       - name: Archive Release
@@ -72,13 +72,18 @@ jobs:
         with:
           type: 'zip'
           filename: 'release.zip'
-          directory: build/linux/
+          directory: build/linux/x64
 
       - name: Upload Release
-        uses: ncipollo/release-action@v1
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          artifacts: "release.zip"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            LICENSE.txt
+            *.jar
 
   build-windows:
     runs-on: windows-latest
@@ -111,11 +116,14 @@ jobs:
           directory: build/windows/runner/Release
 
       - name: Upload Release
-        uses: ncipollo/release-action@v1
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          tag: "windows"
-          artifacts: "build/windows/runner/release.zip"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "windows"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            build/windows/runner/release.zip
 
   build-android:
     runs-on: ubuntu-latest
@@ -138,11 +146,14 @@ jobs:
         run: flutter build apk --no-tree-shake-icons --release
 
       - name: Upload Release
-        uses: ncipollo/release-action@v1
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          tag: "android"
-          artifacts: "build/app/outputs/flutter-apk/app-release.apk"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "windows"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
 
 
   build-ios:
