@@ -23,6 +23,10 @@ jobs:
           channel: 'stable'
           architecture: x64
 
+      - name: Install libraries
+        run: |
+          sudo gem install cocoapods
+
       - name: Download flutter package
         run: flutter pub get
 
@@ -162,6 +166,11 @@ jobs:
         with:
           channel: 'stable'
           architecture: x64
+
+      - name: Install libraries
+        run: |
+          sudo gem install cocoapods
+
       - name: Download flutter package
         run: flutter pub get
 
