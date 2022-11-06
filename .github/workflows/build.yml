@@ -109,7 +109,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: "windows"
-          artifacts: "release.zip"
+          artifacts: "build\windows\runner\release.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
 
   build-android:
