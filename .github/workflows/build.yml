@@ -55,7 +55,7 @@ jobs:
       - name: Config flutter
         run: flutter config --enable-linux-desktop
 
-      - name: Upload Release
+      - name: Build
         run: flutter build linux --release
 
       - name: Archive Release
@@ -94,6 +94,9 @@ jobs:
       - name: Build
         run: flutter build windows --release
 
+      - name: listfile
+        run: ls
+
       - name: Archive Release
         uses: thedoctor0/zip-release@main
         with:
@@ -127,18 +130,10 @@ jobs:
       - name: Build
         run: flutter build apk --no-tree-shake-icons --release
 
-      - name: Archive Release
-        uses: thedoctor0/zip-release@main
-        with:
-          type: 'zip'
-          filename: 'release.zip'
-          directory: build/app/outputs/flutter-apk/
-          exclusions: 'app.apk.sha1 app-debug.apk'
-
       - name: Upload Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "release.zip"
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk"
           token: ${{ secrets.GITHUB_TOKEN }}
 
 
