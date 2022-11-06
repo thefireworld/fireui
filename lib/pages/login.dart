@@ -1,10 +1,15 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
+import 'package:fire/env.dart';
 import 'package:fire/pages/lobby.dart';
 import 'package:fire/utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:pinput/pinput.dart';
 import 'package:social_login_buttons/social_login_buttons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginCodePage extends StatefulWidget {
   const LoginCodePage({Key? key}) : super(key: key);
@@ -18,19 +23,6 @@ class _LoginCodePageState extends State<LoginCodePage> {
 
   @override
   Widget build(BuildContext context) {
-    final defaultPinTheme = PinTheme(
-      width: 56,
-      height: 56,
-      textStyle: const TextStyle(
-          fontSize: 20,
-          color: Color.fromRGBO(30, 60, 87, 1),
-          fontWeight: FontWeight.w600),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color.fromRGBO(232, 232, 232, 1.0)),
-        borderRadius: BorderRadius.circular(20),
-      ),
-    );
-
     return Scaffold(
       body: Center(
         child: Column(
@@ -44,61 +36,7 @@ class _LoginCodePageState extends State<LoginCodePage> {
               ),
             ),
             const SizedBox(height: 10),
-            Pinput(
-              controller: _loginCodeController,
-              defaultPinTheme: defaultPinTheme,
-              focusedPinTheme: defaultPinTheme.copyDecorationWith(
-                border:
-                    Border.all(color: const Color.fromRGBO(114, 178, 238, 1)),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              submittedPinTheme: defaultPinTheme.copyWith(
-                decoration: defaultPinTheme.decoration!.copyWith(
-                  color: const Color.fromRGBO(234, 239, 243, 1),
-                ),
-              ),
-              pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
-              showCursor: false,
-              autofocus: true,
-              onCompleted: (code) async {
-                EasyLoading.show();
-                Response response;
-                try {
-                  response = await Dio().get(
-                    'http://$fireServerUrl/logincode/$code',
-                    options: Options(
-                      headers: {
-                        "authorization": "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
-                      },
-                      sendTimeout: 1000,
-                    ),
-                  );
-                } catch (e) {
-                  EasyLoading.showToast("서버와 연결할 수 없어요.");
-                  return;
-                }
-
-                if (response.data["userUid"] != null) {
-                  FireAccount.current =
-                      await FireAccount.getFromUid(response.data["userUid"]);
-                  if (FireAccount.current == null) {
-                    EasyLoading.showToast("서버와 연결할 수 없어요.");
-                    return;
-                  }
-                  EasyLoading.showToast("로그인 완료: ${FireAccount.current!.name}");
-                  // ignore: use_build_context_synchronously
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LobbyPage(),
-                    ),
-                  );
-                } else {
-                  _loginCodeController.clear();
-                  EasyLoading.showToast("로그인 코드가 잘못되었습니다.");
-                }
-              },
-            ),
+            codeInput(),
             const SizedBox(height: 20),
             MaterialButton(
               onPressed: () {
@@ -133,9 +71,101 @@ class _LoginCodePageState extends State<LoginCodePage> {
               },
               child: const Text("어떻게 로그인하나요?"),
             ),
+            MaterialButton(
+              onPressed: () async {
+                if (!await launchUrl(Uri.parse("thefire-world.web.app"))) {
+                  EasyLoading.showError("웹페이지를 여는데 실패했습니다.");
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text("웹에서 코드 받기"),
+                  Chip(
+                    padding: EdgeInsets.all(0),
+                    label: Text(
+                      'Beta',
+                      style: TextStyle(color: Colors.white, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget codeInput() {
+    final defaultPinTheme = PinTheme(
+      width: 56,
+      height: 56,
+      textStyle: const TextStyle(
+          fontSize: 20,
+          color: Color.fromRGBO(30, 60, 87, 1),
+          fontWeight: FontWeight.w600),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color.fromRGBO(232, 232, 232, 1.0)),
+        borderRadius: BorderRadius.circular(20),
+      ),
+    );
+
+    return Pinput(
+      controller: _loginCodeController,
+      defaultPinTheme: defaultPinTheme,
+      focusedPinTheme: defaultPinTheme.copyDecorationWith(
+        border: Border.all(color: const Color.fromRGBO(114, 178, 238, 1)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      submittedPinTheme: defaultPinTheme.copyWith(
+        decoration: defaultPinTheme.decoration!.copyWith(
+          color: const Color.fromRGBO(234, 239, 243, 1),
+        ),
+      ),
+      pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+      showCursor: false,
+      autofocus: true,
+      onCompleted: (code) async {
+        EasyLoading.show();
+        Response response;
+        try {
+          response = await Dio().post(
+            '$fireApiUrl/logincode/$code',
+            options: Options(
+              headers: {
+                "authorization": "Bearer ${Env.fireApiKey}",
+              },
+              sendTimeout: 1000,
+            ),
+          );
+        } catch (e) {
+          EasyLoading.showToast("서버와 연결할 수 없어요.");
+          log(e.toString());
+          return;
+        }
+
+        if (response.data["userUid"] != null) {
+          FireAccount.current =
+              await FireAccount.getFromUid(response.data["userUid"]);
+          if (FireAccount.current == null) {
+            EasyLoading.showToast("서버와 연결할 수 없어요.");
+            return;
+          }
+          EasyLoading.showToast("로그인 완료: ${FireAccount.current!.name}");
+          // ignore: use_build_context_synchronously
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LobbyPage(),
+            ),
+          );
+        } else {
+          _loginCodeController.clear();
+          EasyLoading.showToast("로그인 코드가 잘못되었습니다.");
+        }
+      },
     );
   }
 }
@@ -161,6 +191,12 @@ class _LoginPageState extends State<LoginPage> {
 
               final credential = await signInWithGoogle();
               if (credential.credential != null) {
+                if (kIsWeb) {
+                  if (!mounted) return;
+                  showLoginCode(context, credential.user!.uid);
+                  return;
+                }
+
                 FireAccount.current =
                     await FireAccount.getFromUid(credential.user!.uid);
 
@@ -168,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                   EasyLoading.showToast("서버와 연결할 수 없어요.");
                 } else {
                   EasyLoading.showToast("로그인 완료: ${FireAccount.current!.name}");
-                  // ignore: use_build_context_synchronously
+                  if (!mounted) return;
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -178,7 +214,6 @@ class _LoginPageState extends State<LoginPage> {
                 }
                 return;
               }
-
               EasyLoading.showToast("로그인에 실패했습니다.");
             },
           ),

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -5,11 +6,16 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:fire/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'env.dart';
 
 String address = "err";
 
-String fireServerUrl = "pc.iamsihu.wtf:3000";
+String fireApiUrl = "http://pc.iamsihu.wtf:3000";
+String fireServerUrl = "pc.iamsihu.wtf:4000";
 bool fireServerConnected = false;
 
 class FireAccount {
@@ -31,7 +37,7 @@ class FireAccount {
     try {
       var dio = Dio();
       final response = await dio.get(
-        'http://$fireServerUrl/user/$uid',
+        '$fireApiUrl/user/$uid',
         options: Options(sendTimeout: 5000),
       );
       return FireAccount._(response.data["uid"], response.data["name"]);
@@ -93,4 +99,56 @@ Uint8List encryptFile(Uint8List data, String password) {
 
 Uint8List decryptFile(Uint8List data, String password) {
   return data;
+}
+
+void showLoginCode(BuildContext context, String uid) async {
+  var dio = Dio();
+  EasyLoading.show();
+  String code = await getNewLoginCode(uid);
+  EasyLoading.dismiss();
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("데스크톱에서 로그인"),
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              Text("로그인코드: $code"),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          ElevatedButton(
+            child: const Text('OK'),
+            onPressed: () async {
+              Navigator.pop(context);
+              await dio.delete(
+                '$fireApiUrl/logincode/$code',
+                options: Options(
+                  headers: {
+                    "authorization": "Bearer ${Env.fireApiKey}",
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<String> getNewLoginCode(String uid) async {
+  var dio = Dio();
+  final response = await dio.post(
+    '$fireApiUrl/logincode/create/$uid',
+    options: Options(
+      headers: {
+        "authorization": "Bearer ${Env.fireApiKey}",
+      },
+    ),
+  );
+  log("asdf");
+  return response.data["code"];
 }

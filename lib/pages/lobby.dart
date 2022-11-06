@@ -1,3 +1,4 @@
+import 'package:fire/env.dart';
 import 'package:fire/main.dart';
 import 'package:fire/pages/firetoss.dart';
 import 'package:fire/utils.dart';
@@ -35,50 +36,7 @@ class _LobbyPageState extends State<LobbyPage> {
     return Scaffold(
       floatingActionButton: IconButton(
         onPressed: () async {
-          var dio = Dio();
-          EasyLoading.show();
-          final response = await dio.post(
-            'http://$fireServerUrl/logincode/${FireAccount.current!.uid}',
-            options: Options(
-              headers: {
-                "authorization": "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
-              },
-            ),
-          );
-          EasyLoading.dismiss();
-          String code = response.data["code"];
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text("데스크톱에서 로그인"),
-                content: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Text("로그인코드: $code"),
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-                  ElevatedButton(
-                    child: const Text('OK'),
-                    onPressed: () async {
-                      Navigator.pop(context);
-                      await dio.delete(
-                        'http://$fireServerUrl/logincode/$code',
-                        options: Options(
-                          headers: {
-                            "authorization":
-                                "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              );
-            },
-          );
+          showLoginCode(context, FireAccount.current!.uid);
         },
         icon: const Icon(Icons.account_circle),
       ),

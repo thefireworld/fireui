@@ -5,6 +5,7 @@ import 'package:fire/pages/firetoss.dart';
 import 'package:fire/pages/login.dart';
 import 'package:fire/utils.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -31,28 +32,6 @@ void main(List<String> arguments) async {
   //   FlutterDownloader.registerCallback(callback);
   // }
 
-  String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
-  socket = io(
-    'http://$fireServerUrl',
-    OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
-        .build(),
-  );
-
-  socket.onConnect((_) {
-    log("connected!");
-    fireServerConnected = true;
-    socket.emit('connect server', {"address": deviceId});
-  });
-
-  socket.on("new address", (data) {
-    address = data;
-  });
-  socket.on("connect approved", (data) {
-    if (FireAccount.current != null) {
-      socket.emit("login", FireAccount.current!.uid);
-    }
-  });
-
   if (arguments.isNotEmpty) {
     if (arguments[0] == "toss") {
       if (arguments.length > 1) {
@@ -73,14 +52,18 @@ void main(List<String> arguments) async {
     }
   }
 
-  initializeFireToss();
+  if (!kIsWeb) {
+    await initializeSocket();
+    initializeFireToss();
+  }
 
   await Hive.initFlutter();
 
-  if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
+  if (kIsWeb || Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+
     runApp(MaterialApp(
       theme: ThemeData(
         useMaterial3: true,
@@ -97,4 +80,29 @@ void main(List<String> arguments) async {
       builder: EasyLoading.init(),
     ));
   }
+}
+
+Future<void> initializeSocket() async {
+  String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
+
+  socket = io(
+    'http://$fireServerUrl',
+    OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
+        .build(),
+  );
+
+  socket.onConnect((_) {
+    log("connected!");
+    fireServerConnected = true;
+    socket.emit('connect server', {"address": deviceId});
+  });
+
+  socket.on("new address", (data) {
+    address = data;
+  });
+  socket.on("connect approved", (data) {
+    if (FireAccount.current != null) {
+      socket.emit("login", FireAccount.current!.uid);
+    }
+  });
 }

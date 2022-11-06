@@ -33,10 +33,13 @@ migrate_working_dir/
 /build/
 
 # Web related
-lib/generated_plugin_registrant.dart
 
 # Symbolication related
 app.*.symbols
 
 # Obfuscation related
 app.*.map.json
+
+# exclude the API key from version control
+*.env
+env.g.dart

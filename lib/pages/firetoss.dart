@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
@@ -8,6 +9,7 @@ import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:drag_and_drop_windows/drag_and_drop_windows.dart';
 import 'package:file_icon/file_icon.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:fire/env.dart';
 import 'package:fire/main.dart';
 import 'package:fire/utils.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
@@ -40,17 +42,17 @@ void initializeFireToss() {
       for (var value in data) {
         List<String> spl = value.split('/');
         String name = spl[spl.length - 1];
-        name = name.substring(0, name.length - 13);
+        name = name.substring(14);
         if (Platform.isAndroid || Platform.isIOS) {
           await FlutterDownloader.enqueue(
-            url: "http://$value",
+            url: "$value",
             savedDir: directory.path,
             fileName: name,
             showNotification: true,
             openFileFromNotification: true,
           );
         } else {
-          final Uint8List bytes = await InternetFile.get("http://$value",
+          final Uint8List bytes = await InternetFile.get("$value",
               progress: (receivedLength, contentLength) {});
           File("${directory.path}/$name")
             ..createSync(recursive: true)
@@ -77,6 +79,8 @@ class _FireTossPageState extends State<FireTossPage>
   late AnimationController _animationController;
   late StreamSubscription subscription;
   List<String> files = [];
+  Map<String, String> devices = {};
+  bool isDeviceFound = false;
 
   @override
   void initState() {
@@ -110,13 +114,51 @@ class _FireTossPageState extends State<FireTossPage>
     super.dispose();
   }
 
+  List<Bubble> bubbles() {
+    List<Bubble> widgets = [];
+    devices.forEach((key, value) {
+      widgets.add(
+        Bubble(
+          title: key,
+          iconColor: Colors.black,
+          bubbleColor: Colors.white,
+          icon: Icons.devices,
+          titleStyle: const TextStyle(fontSize: 16, color: Colors.black),
+          onPress: () async {
+            await sendFile(context, value);
+            if (!mounted) return;
+            Navigator.pop(context);
+          },
+        ),
+      );
+    });
+    return widgets;
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!isDeviceFound) {
+      var dio = Dio();
+      dio
+          .get('$fireApiUrl/user/${FireAccount.current?.uid}/device/list',
+              options: Options(sendTimeout: 5000))
+          .then((value) {
+        for (var value in jsonDecode(value.toString())["devices"]) {
+          if (address != value["address"]) {
+            devices[value["name"]] = value["address"];
+          }
+        }
+        log(value.toString());
+        setState(() {});
+      });
+      isDeviceFound = true;
+    }
     return Scaffold(
       appBar: AppBar(title: const Text("Toss하기")),
       // backgroundColor: Colors.white,
       floatingActionButton: FloatingActionBubble(
         items: [
+          ...bubbles(),
           Bubble(
             title: "디바이스 찾기..",
             iconColor: Colors.black,
@@ -236,26 +278,26 @@ class _FireTossPageState extends State<FireTossPage>
                 onHover: (PointerEnterEvent event) {},
                 child: widget,
               );
-              if (index < 10 /*MAX FILES*/) {
-                return widget;
-              } else {
-                return Tooltip(
-                  message: "한번에 최대 10개의 파일을 보낼 수 있습니다.",
-                  child: Stack(
-                    alignment: AlignmentDirectional.center,
-                    children: [
-                      widget,
-                      const Image(
-                        image: Svg(
-                          "assets/icons8-error.svg",
-                          color: Colors.red,
-                        ),
-                        width: 75,
-                      ),
-                    ],
-                  ),
-                );
-              }
+              // if (index < 10 /*MAX FILES*/) {
+              return widget;
+              // } else {
+              //   return Tooltip(
+              //     message: "한번에 최대 10개의 파일을 보낼 수 있습니다.",
+              //     child: Stack(
+              //       alignment: AlignmentDirectional.center,
+              //       children: [
+              //         widget,
+              //         const Image(
+              //           image: Svg(
+              //             "assets/icons8-error.svg",
+              //             color: Colors.red,
+              //           ),
+              //           width: 75,
+              //         ),
+              //       ],
+              //     ),
+              //   );
+              // }
             },
           ),
         ),
@@ -282,12 +324,12 @@ class _FireTossPageState extends State<FireTossPage>
     );
     try {
       final response = await dio.post(
-        'http://$fireServerUrl/upload',
+        '$fireApiUrl/file',
         data: formData,
         onSendProgress: (rec, total) {},
         options: Options(
           headers: {
-            "authorization": "Basic 6BB6EEF72AD57F14F4B59F2C1AE2F",
+            "authorization": "Bearer ${Env.fireApiKey}",
           },
         ),
       );
