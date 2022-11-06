@@ -103,13 +103,13 @@ jobs:
         with:
           type: 'zip'
           filename: 'release.zip'
-          directory: build\windows\runner\Release\
+          directory: build/windows/runner/Release
 
       - name: Upload Release
         uses: ncipollo/release-action@v1
         with:
           tag: "windows"
-          artifacts: "build\windows\runner\release.zip"
+          artifacts: "build/windows/runner/release.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
 
   build-android:
