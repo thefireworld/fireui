@@ -72,16 +72,16 @@ jobs:
         with:
           type: 'zip'
           filename: 'release.zip'
-          directory: build/linux/x64
+          directory: build/linux/x64/release/bundle
 
       - name: Upload Release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "linux"
-          prerelease: true
+          prerelease: false
           files: |
-            build/linux/x64/release.zip
+            build/linux/x64/release/bundle/release.zip
 
   build-windows:
     runs-on: windows-latest
@@ -118,6 +118,7 @@ jobs:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "windows"
+          prerelease: false
           files: |
             build/windows/runner/Release/release.zip
 
@@ -145,8 +146,8 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "windows"
-          prerelease: true
+          automatic_release_tag: "android"
+          prerelease: false
           files: |
             build/app/outputs/flutter-apk/app-release.apk
 
