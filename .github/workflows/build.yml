@@ -94,15 +94,12 @@ jobs:
       - name: Build
         run: flutter build windows --release
 
-      - name: listfile
-        run: ls
-
       - name: Archive Release
         uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
           filename: 'release.zip'
-          directory: build\windows\runner\Debug\
+          directory: build\windows\runner\Release\
 
       - name: Upload Release
         uses: ncipollo/release-action@v1
