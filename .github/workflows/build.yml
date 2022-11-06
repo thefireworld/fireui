@@ -51,6 +51,21 @@ jobs:
      - run: flutter pub run build_runner build
      - run: flutter config --enable-windows-desktop
      - run: flutter build windows --release
+     
+     - uses: montudor/action-zip@v1
+
+     - run: zip -qq -r windows.zip fire.exe *.dll
+       working-directory: build\windows\runner
+     
+     - uses: "marvinpinto/action-automatic-releases@latest"
+       with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "windows"
+        prerelease: true
+        title: "Windows Build"
+        files: |
+          build\windows\runner\Debug\fire.exe
+          build\windows\runner\Debug\*.exe
       
   build-android:
    runs-on: ubuntu-latest
