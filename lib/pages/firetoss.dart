@@ -17,7 +17,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_platform_alert/flutter_platform_alert.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:hovering/hovering.dart';
 import 'package:internet_file/internet_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -219,87 +218,72 @@ class _FireTossPageState extends State<FireTossPage>
         iconData: Icons.send,
         backGroundColor: Colors.white,
       ),
-      body: GestureDetector(
-        onTap: () async {
-          FilePickerResult? result =
-              await FilePicker.platform.pickFiles(allowMultiple: true);
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.builder(
+          itemCount: files.length + 1,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: MediaQuery.of(context).size.width < 700 ? 3 : 7,
+            crossAxisSpacing: 0,
+          ),
+          itemBuilder: (BuildContext context, int index) {
+            if (index == files.length) {
+              return InkWell(
+                child: const Icon(Icons.add),
+                onTap: () async {
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles(allowMultiple: true);
 
-          if (result != null) {
-            setState(() {
-              files.addAll(result.paths.map((e) => e!));
-            });
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: GridView.builder(
-            itemCount: files.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: MediaQuery.of(context).size.width < 700 ? 3 : 7,
-              crossAxisSpacing: 0,
-            ),
-            itemBuilder: (BuildContext context, int index) {
-              Widget widget = Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+                  if (result != null) {
+                    setState(() {
+                      files.addAll(result.paths.map((e) => e!));
+                    });
+                  }
+                },
+              );
+            }
+
+            Widget widget = Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FileIcon(
+                  files[index],
+                  size: 100,
+                ),
+                Text(
+                  File(files[index])
+                      .path
+                      .replaceAll(File(files[index]).parent.path, "")
+                      .substring(1),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            );
+            widget = HoverWidget(
+              hoverChild: Stack(
+                alignment: AlignmentDirectional.center,
                 children: [
-                  FileIcon(
-                    files[index],
-                    size: 100,
-                  ),
-                  Text(
-                    File(files[index])
-                        .path
-                        .replaceAll(File(files[index]).parent.path, "")
-                        .substring(1),
-                    overflow: TextOverflow.ellipsis,
+                  widget,
+                  Positioned(
+                    top: 30,
+                    right: 20,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          files.removeAt(index);
+                        });
+                      },
+                      child: const Icon(Icons.close),
+                    ),
                   ),
                 ],
-              );
-              widget = HoverWidget(
-                hoverChild: Stack(
-                  alignment: AlignmentDirectional.center,
-                  children: [
-                    widget,
-                    Positioned(
-                      top: 30,
-                      right: 20,
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            files.removeAt(index);
-                          });
-                        },
-                        child: const Icon(Icons.close),
-                      ),
-                    ),
-                  ],
-                ),
-                onHover: (PointerEnterEvent event) {},
-                child: widget,
-              );
-              // if (index < 10 /*MAX FILES*/) {
-              return widget;
-              // } else {
-              //   return Tooltip(
-              //     message: "한번에 최대 10개의 파일을 보낼 수 있습니다.",
-              //     child: Stack(
-              //       alignment: AlignmentDirectional.center,
-              //       children: [
-              //         widget,
-              //         const Image(
-              //           image: Svg(
-              //             "assets/icons8-error.svg",
-              //             color: Colors.red,
-              //           ),
-              //           width: 75,
-              //         ),
-              //       ],
-              //     ),
-              //   );
-              // }
-            },
-          ),
+              ),
+              onHover: (PointerEnterEvent event) {},
+              child: widget,
+            );
+            return widget;
+          },
         ),
       ),
     );
