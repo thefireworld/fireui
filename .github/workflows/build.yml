@@ -58,6 +58,10 @@ jobs:
       - name: Build
         run: flutter build linux --release
 
+      - run: |
+          cd build/linux
+          ls
+
       - name: Archive Release
         uses: thedoctor0/zip-release@main
         with:
@@ -104,6 +108,7 @@ jobs:
       - name: Upload Release
         uses: ncipollo/release-action@v1
         with:
+          tag: "windows"
           artifacts: "release.zip"
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -130,6 +135,7 @@ jobs:
       - name: Upload Release
         uses: ncipollo/release-action@v1
         with:
+          tag: "android"
           artifacts: "build/app/outputs/flutter-apk/app-release.apk"
           token: ${{ secrets.GITHUB_TOKEN }}
 
