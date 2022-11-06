@@ -67,10 +67,6 @@ jobs:
       - name: Build
         run: flutter build linux --release
 
-      - run: |
-          cd build/linux/x64
-          ls
-
       - name: Archive Release
         uses: thedoctor0/zip-release@main
         with:
