@@ -29,7 +29,7 @@ jobs:
 
       - name: Write Api Keys
         run: |
-          echo "${{ secrets.FIRE_API_KEY }}" > .env
+          echo "FIRE_API_KEY=${{ secrets.FIRE_API_KEY }}" > .env
 
       - name: Download flutter package
         run: flutter pub get
@@ -61,7 +61,7 @@ jobs:
 
       - name: Write Api Keys
         run: |
-          echo "${{ secrets.FIRE_API_KEY }}" > .env
+          echo "FIRE_API_KEY=${{ secrets.FIRE_API_KEY }}" > .env
 
       - name: Download flutter package
         run: flutter pub get
@@ -104,7 +104,7 @@ jobs:
 
       - name: Write Api Keys
         run: |
-          echo "${{ secrets.FIRE_API_KEY }}" > .env
+          echo "FIRE_API_KEY=${{ secrets.FIRE_API_KEY }}" > .env
 
       - name: Download flutter package
         run: flutter pub get
@@ -147,7 +147,7 @@ jobs:
 
       - name: Write Api Keys
         run: |
-          echo "${{ secrets.FIRE_API_KEY }}" > .env
+          echo "FIRE_API_KEY=${{ secrets.FIRE_API_KEY }}" > .env
 
       - name: Download flutter package
         run: flutter pub get
@@ -185,7 +185,7 @@ jobs:
 
       - name: Write Api Keys
         run: |
-          echo "${{ secrets.FIRE_API_KEY }}" > .env
+          echo "FIRE_API_KEY=${{ secrets.FIRE_API_KEY }}" > .env
 
       - name: Download flutter package
         run: flutter pub get
