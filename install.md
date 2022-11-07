@@ -1,0 +1,5 @@
+### [Android (APK)](https://github.com/thefireworld/fire/releases/download/android/app-release.apk)
+### [iPhone/iPad (W.I.P.)](#)
+### [Windows](https://github.com/thefireworld/fire/releases/download/windows/release.zip)
+### [Linux](https://github.com/thefireworld/fire/releases/download/linux/release.zip)
+### [Mac (W.I.P.)](#)
