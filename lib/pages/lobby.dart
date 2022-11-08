@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:drag_and_drop_windows/drag_and_drop_windows.dart';
 import 'package:file_icon/file_icon.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:fire/main.dart';
 import 'package:fire/utils.dart';
 import 'package:fire/widgets.dart';
@@ -185,6 +186,23 @@ class _FireTossWidgetState extends State<FireTossWidget> {
         ),
       );
     }
+    widgets.add(
+      Center(
+        child: IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () async {
+            FilePickerResult? result =
+                await FilePicker.platform.pickFiles(allowMultiple: true);
+
+            if (result != null) {
+              setState(() {
+                files.addAll(result.paths.map((e) => e!));
+              });
+            }
+          },
+        ),
+      ),
+    );
     return widgets;
   }
 }
