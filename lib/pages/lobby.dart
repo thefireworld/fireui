@@ -156,7 +156,7 @@ class _FireTossWidgetState extends State<FireTossWidget> {
         PopupMenuItem(
           child: Text(key),
           onTap: () async {
-            // await sendFile(context, value);
+            //TODO 파일 전송
             files.clear();
           },
         ),
@@ -166,7 +166,8 @@ class _FireTossWidgetState extends State<FireTossWidget> {
       PopupMenuItem(
         child: const Text("디바이스 찾기.."),
         onTap: () async {
-          // await sendFile(context, value);
+          //TODO 디바이스 찾기
+          //TODO 파일 전송
         },
       ),
     );
