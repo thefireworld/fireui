@@ -55,35 +55,22 @@ class _FireTossWidgetState extends State<FireTossWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(50),
-      child: Container(
-        width: 350,
-        height: 350,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(
-            Radius.circular(20),
+    return Column(
+      children: [
+        TitleBar(
+          "FireToss",
+          const Icon(Icons.send),
+          PopupMenu(
+            menuList: bubbles(),
+            child: const Icon(Icons.send),
           ),
         ),
-        child: Column(
-          children: [
-            TitleBar(
-              "FireToss",
-              const Icon(Icons.send),
-              PopupMenu(
-                menuList: bubbles(),
-                child: const Icon(Icons.send),
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(children: fileListWidget()),
-              ),
-            ),
-          ],
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(children: fileListWidget()),
+          ),
         ),
-      ),
+      ],
     );
   }
 

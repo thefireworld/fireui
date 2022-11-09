@@ -1,5 +1,4 @@
 import 'package:fire/main.dart';
-import 'package:fire/pages/lobby/widgets/account.dart';
 import 'package:fire/pages/lobby/widgets/firetoss.dart';
 import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
@@ -39,16 +38,37 @@ class _LobbyPageState extends State<LobbyPage> {
         },
         icon: const Icon(Icons.account_circle),
       ),
-      body: SizedBox.expand(
-        child: SingleChildScrollView(
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            children: const [
-              FireTossWidget(),
-            ],
+      body: SafeArea(
+        child: SizedBox.expand(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(0, 25, 0, 0),
+            child: SingleChildScrollView(
+              child: Wrap(
+                spacing: 25,
+                runSpacing: 25,
+                alignment: WrapAlignment.center,
+                children: [
+                  make(const FireTossWidget()),
+                ],
+              ),
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget make(Widget w) {
+    return Container(
+      width: 300,
+      height: 300,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(
+          Radius.circular(20),
+        ),
+      ),
+      child: w,
     );
   }
 }
@@ -56,7 +76,7 @@ class _LobbyPageState extends State<LobbyPage> {
 class TitleBar extends StatelessWidget {
   final String title;
   final Widget leading;
-  final Widget trailing;
+  final Widget? trailing;
 
   const TitleBar(this.title, this.leading, this.trailing, {Key? key})
       : super(key: key);
