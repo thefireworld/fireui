@@ -1,4 +1,5 @@
 import 'package:fire/main.dart';
+import 'package:fire/pages/lobby/widgets/account.dart';
 import 'package:fire/pages/lobby/widgets/firetoss.dart';
 import 'package:fire/utils.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +49,7 @@ class _LobbyPageState extends State<LobbyPage> {
                 runSpacing: 25,
                 alignment: WrapAlignment.center,
                 children: [
+                  make(const AccountWidget()),
                   make(const FireTossWidget()),
                 ],
               ),
