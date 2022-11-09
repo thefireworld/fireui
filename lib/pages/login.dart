@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:fire/env.dart';
-import 'package:fire/pages/lobby.dart';
+import 'package:fire/pages/lobby/lobby.dart';
 import 'package:fire/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

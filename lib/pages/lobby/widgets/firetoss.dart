@@ -6,74 +6,11 @@ import 'package:dio/dio.dart';
 import 'package:drag_and_drop_windows/drag_and_drop_windows.dart';
 import 'package:file_icon/file_icon.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:fire/main.dart';
 import 'package:fire/utils.dart';
 import 'package:fire/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:socket_io_client/socket_io_client.dart';
 
-class LobbyPage extends StatefulWidget {
-  const LobbyPage({Key? key}) : super(key: key);
-
-  @override
-  State<LobbyPage> createState() => _LobbyPageState();
-}
-
-class _LobbyPageState extends State<LobbyPage> {
-  String? deviceName;
-
-  @override
-  void initState() {
-    getDeviceName().then((value) {
-      setState(() {
-        deviceName = value;
-      });
-    });
-
-    socket.onConnect((_) {
-      setState(() {});
-    });
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF9adbfd),
-      floatingActionButton: IconButton(
-        onPressed: () async {
-          showLoginCode(context, FireAccount.current!.uid);
-        },
-        icon: const Icon(Icons.account_circle),
-      ),
-      body: SizedBox.expand(
-        child: SingleChildScrollView(
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            children: const [
-              FireTossWidget(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class TitleBar extends StatelessWidget {
-  final title;
-  final trailing;
-
-  const TitleBar(this.title, this.trailing, {Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(title),
-      trailing: trailing,
-    );
-  }
-}
+import '../lobby.dart';
 
 class FireTossWidget extends StatefulWidget {
   const FireTossWidget({Key? key}) : super(key: key);
@@ -133,6 +70,7 @@ class _FireTossWidgetState extends State<FireTossWidget> {
           children: [
             TitleBar(
               "FireToss",
+              const Icon(Icons.send),
               PopupMenu(
                 menuList: bubbles(),
                 child: const Icon(Icons.send),
