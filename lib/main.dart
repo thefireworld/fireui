@@ -7,7 +7,6 @@ import 'package:fire/utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:platform_device_id/platform_device_id.dart';
@@ -17,20 +16,8 @@ import 'firebase_options.dart';
 
 late Socket socket;
 
-void callback(String id, DownloadTaskStatus status, int progress) {
-  log("$status $progress");
-}
-
 void main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // if (Platform.isAndroid || Platform.isIOS) {
-  //   await FlutterDownloader.initialize(
-  //     debug: true,
-  //     ignoreSsl: true,
-  //   );
-  //   FlutterDownloader.registerCallback(callback);
-  // }
 
   if (arguments.isNotEmpty) {
     if (arguments[0] == "toss") {
