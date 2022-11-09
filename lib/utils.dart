@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -21,12 +20,31 @@ bool fireServerConnected = false;
 class FireAccount {
   static FireAccount? _current;
 
-  String uid;
-  String name;
+  final String uid;
+  String _name;
 
-  FireAccount._(this.uid, this.name);
+  FireAccount._(this.uid, this._name);
 
   static FireAccount? get current => _current;
+
+  String get name => _name;
+
+  set name(String newName) {
+    var dio = Dio();
+    dio
+        .post(
+          '$fireApiUrl/user/$uid/name',
+          data: {"newName": newName},
+          options: Options(
+            sendTimeout: 5000,
+            headers: {
+              "authorization": "Bearer ${Env.fireApiKey}",
+            },
+          ),
+        )
+        .then((value) {});
+    _name = newName;
+  }
 
   static set current(FireAccount? account) {
     _current = account;
@@ -149,6 +167,5 @@ Future<String> getNewLoginCode(String uid) async {
       },
     ),
   );
-  log("asdf");
   return response.data["code"];
 }
