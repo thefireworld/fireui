@@ -168,6 +168,5 @@ Future<String> getNewLoginCode(String uid) async {
       },
     ),
   );
-  log("asdf");
   return response.data["code"];
 }

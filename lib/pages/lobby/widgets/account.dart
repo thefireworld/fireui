@@ -23,10 +23,15 @@ class _AccountWidgetState extends State<AccountWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const TitleBar(
+        TitleBar(
           "Account",
-          Icon(Icons.account_circle),
-          null,
+          const Icon(Icons.account_circle),
+          IconButton(
+            onPressed: () {
+              showLoginCode(context, FireAccount.current!.uid);
+            },
+            icon: const Icon(Icons.login),
+          ),
         ),
         Expanded(
           child: Column(

@@ -53,8 +53,8 @@ class _LoginCodePageState extends State<LoginCodePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
                           Text("1. 스마트폰, Mac에서 Fire를 설치한 후 로그인합니다."),
-                          Text("2. 오른쪽 아래 '계정' 버튼에서 로그인 코드를 클릭하세요."),
-                          Text("3. 화면에 표시되는 코드를 이 디바이스에 입력하세요."),
+                          Text("2. Account 위젯에 오른쪽 상단 로그인 버튼을 누릅니다."),
+                          Text("3. 화면에 표시되는 코드를 입력해주세요."),
                         ],
                       ),
                       actions: <Widget>[

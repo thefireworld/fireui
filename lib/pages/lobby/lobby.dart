@@ -33,12 +33,6 @@ class _LobbyPageState extends State<LobbyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF9adbfd),
-      floatingActionButton: IconButton(
-        onPressed: () async {
-          showLoginCode(context, FireAccount.current!.uid);
-        },
-        icon: const Icon(Icons.account_circle),
-      ),
       body: SafeArea(
         child: SizedBox.expand(
           child: Container(
