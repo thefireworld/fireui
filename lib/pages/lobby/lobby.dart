@@ -32,7 +32,7 @@ class _LobbyPageState extends State<LobbyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF9adbfd),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SizedBox.expand(
           child: Container(
@@ -58,9 +58,9 @@ class _LobbyPageState extends State<LobbyPage> {
     return Container(
       width: 300,
       height: 300,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: const BorderRadius.all(
           Radius.circular(20),
         ),
       ),
