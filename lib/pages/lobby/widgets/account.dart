@@ -1,5 +1,6 @@
-import 'package:fire/utils.dart';
+import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../lobby.dart';
 
@@ -25,12 +26,11 @@ class _AccountWidgetState extends State<AccountWidget> {
       children: [
         TitleBar(
           "Account",
-          const Icon(Icons.account_circle),
-          IconButton(
-            onPressed: () {
+          InkWell(
+            onTap: () {
               showLoginCode(context, FireAccount.current!.uid);
             },
-            icon: const Icon(Icons.login),
+            child: const Icon(Iconsax.scan_barcode),
           ),
         ),
         Expanded(
@@ -60,7 +60,7 @@ class _AccountWidgetState extends State<AccountWidget> {
                 leading: const Text("기기 ID"),
                 title: Text(address),
                 trailing: IconButton(
-                  icon: const Icon(Icons.copy),
+                  icon: const Icon(Iconsax.copy),
                   onPressed: () {},
                 ),
               ),

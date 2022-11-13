@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:fire/pages/login.dart';
-import 'package:fire/utils.dart';
+import 'package:fire/utils/utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
