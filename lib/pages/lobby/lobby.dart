@@ -1,7 +1,7 @@
 import 'package:fire/main.dart';
 import 'package:fire/pages/lobby/widgets/account.dart';
 import 'package:fire/pages/lobby/widgets/firetoss.dart';
-import 'package:fire/utils.dart';
+import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
@@ -71,23 +71,26 @@ class _LobbyPageState extends State<LobbyPage> {
 
 class TitleBar extends StatelessWidget {
   final String title;
-  final Widget leading;
   final Widget? trailing;
 
-  const TitleBar(this.title, this.leading, this.trailing, {Key? key})
-      : super(key: key);
+  const TitleBar(this.title, this.trailing, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ListTile(
-        leading: leading,
-        title: Text(
-          title,
-          style: const TextStyle(fontSize: 27),
+      child: SizedBox(
+        width: 300,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Text(title, style: text(fontSize: 27)),
+            Positioned(
+              right: 10,
+              child: trailing!,
+            ),
+          ],
         ),
-        trailing: trailing,
       ),
     );
   }

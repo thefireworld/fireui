@@ -4,18 +4,19 @@ import 'dart:typed_data';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:fire/main.dart';
+import 'package:fire/utils/server.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import 'env.dart';
+import '../env.dart';
+
+export 'textformatter.dart';
+export 'server.dart';
 
 String address = "err";
-
-String fireApiUrl = "http://pc.iamsihu.wtf:3000";
-String fireServerUrl = "pc.iamsihu.wtf:4000";
-bool fireServerConnected = false;
 
 class FireAccount {
   static FireAccount? _current;
@@ -143,11 +144,6 @@ void showLoginCode(BuildContext context, String uid) async {
               Navigator.pop(context);
               await dio.delete(
                 '$fireApiUrl/logincode/$code',
-                options: Options(
-                  headers: {
-                    "authorization": "Bearer ${Env.fireApiKey}",
-                  },
-                ),
               );
             },
           ),
@@ -159,13 +155,12 @@ void showLoginCode(BuildContext context, String uid) async {
 
 Future<String> getNewLoginCode(String uid) async {
   var dio = Dio();
-  final response = await dio.post(
+  final response = await dio.get(
     '$fireApiUrl/logincode/create/$uid',
-    options: Options(
-      headers: {
-        "authorization": "Bearer ${Env.fireApiKey}",
-      },
-    ),
   );
   return response.data["code"];
+}
+
+TextStyle text({double? fontSize}) {
+  return GoogleFonts.signikaNegative(textStyle: TextStyle(fontSize: fontSize));
 }

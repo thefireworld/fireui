@@ -6,9 +6,10 @@ import 'package:dio/dio.dart';
 import 'package:drag_and_drop_windows/drag_and_drop_windows.dart';
 import 'package:file_icon/file_icon.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:fire/utils.dart';
+import 'package:fire/utils/utils.dart';
 import 'package:fire/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../lobby.dart';
 
@@ -59,10 +60,9 @@ class _FireTossWidgetState extends State<FireTossWidget> {
       children: [
         TitleBar(
           "FireToss",
-          const Icon(Icons.send),
           PopupMenu(
             menuList: bubbles(),
-            child: const Icon(Icons.send),
+            child: const Icon(Iconsax.send_2),
           ),
         ),
         Expanded(

@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:fire/env.dart';
 import 'package:fire/pages/lobby/lobby.dart';
-import 'package:fire/utils.dart';
+import 'package:fire/utils/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -73,7 +73,8 @@ class _LoginCodePageState extends State<LoginCodePage> {
             ),
             MaterialButton(
               onPressed: () async {
-                if (!await launchUrl(Uri.parse("thefire-world.web.app"))) {
+                if (!await launchUrl(
+                    Uri.parse("https://thefire-world.web.app"))) {
                   EasyLoading.showError("웹페이지를 여는데 실패했습니다.");
                 }
               },
@@ -127,6 +128,9 @@ class _LoginCodePageState extends State<LoginCodePage> {
       pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
       showCursor: false,
       autofocus: true,
+      inputFormatters: [
+        UpperCaseTextFormatter(),
+      ],
       onCompleted: (code) async {
         EasyLoading.show();
         Response response;
@@ -188,7 +192,6 @@ class _LoginPageState extends State<LoginPage> {
             buttonType: SocialLoginButtonType.google,
             onPressed: () async {
               EasyLoading.show();
-
               final credential = await signInWithGoogle();
               if (credential.credential != null) {
                 if (kIsWeb) {
