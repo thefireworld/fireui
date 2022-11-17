@@ -1,3 +1,4 @@
+import 'package:fire/main.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -18,6 +19,19 @@ class _AccountWidgetState extends State<AccountWidget> {
   @override
   void initState() {
     super.initState();
+
+    socket.on("new address", (data) {
+      setState(() {
+        address = data;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    socket.off("new address");
+
+    super.dispose();
   }
 
   @override
