@@ -6,10 +6,14 @@ import 'package:dio/dio.dart';
 import 'package:drag_and_drop_windows/drag_and_drop_windows.dart';
 import 'package:file_icon/file_icon.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:fire/env.dart';
+import 'package:fire/main.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:fire/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:qrscan/qrscan.dart';
+import 'package:sn_progress_dialog/progress_dialog.dart';
 
 import '../lobby.dart';
 
@@ -81,7 +85,7 @@ class _FireTossWidgetState extends State<FireTossWidget> {
         PopupMenuItem(
           child: Text(key),
           onTap: () async {
-            //TODO 파일 전송
+            sendFile(context, value);
             files.clear();
           },
         ),
@@ -91,8 +95,44 @@ class _FireTossWidgetState extends State<FireTossWidget> {
       PopupMenuItem(
         child: const Text("디바이스 찾기.."),
         onTap: () async {
-          //TODO 디바이스 찾기
-          //TODO 파일 전송
+          TextEditingController textField = TextEditingController();
+          showDialog(
+            context: context,
+            builder: (ctx) {
+              return AlertDialog(
+                title: const Text('주소를 입력해주세요.'),
+                content: TextField(
+                  controller: textField,
+                  decoration: const InputDecoration(
+                    labelText: "Address",
+                  ),
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: Platform.isAndroid || Platform.isIOS
+                        ? () async {
+                            String? code = await scan();
+                            textField.text = code ?? "";
+                          }
+                        : null,
+                    child: const Text('QR코드 스캔하기'),
+                  ),
+                  ElevatedButton(
+                    child: const Text('OK'),
+                    onPressed: () async {
+                      Navigator.pop(ctx);
+
+                      await sendFile(context, textField.text);
+                      if (!mounted) return;
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+
+          sendFile(context, textField.text);
         },
       ),
     );
@@ -130,5 +170,97 @@ class _FireTossWidgetState extends State<FireTossWidget> {
       ),
     );
     return widgets;
+  }
+
+  Future<void> sendFile(BuildContext context, String address) async {
+    var dio = Dio();
+    List<MultipartFile> uploadFiles = [];
+    for (var path in files) {
+      File file = File(path);
+      uploadFiles.add(MultipartFile.fromBytes(
+          encryptFile(file.readAsBytesSync(), "awesome password"),
+          filename: file.path.replaceFirst(file.parent.path, "").substring(1)));
+    }
+
+    var formData = FormData.fromMap({'files': uploadFiles});
+    ProgressDialog pd = ProgressDialog(context: context);
+    pd.show(
+      max: 100,
+      msg: 'Sending files...',
+    );
+    try {
+      final response = await dio.post(
+        '$fireApiUrl/file',
+        data: formData,
+        onSendProgress: (rec, total) {},
+        options: Options(
+          headers: {
+            "authorization": "Bearer ${Env.fireApiKey}",
+          },
+        ),
+      );
+      if (response.statusCode == 401) {
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("ERROR"),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+        );
+      }
+      socket.emit("toss", {
+        "files": response.data["files"],
+        "to": address,
+      });
+    } catch (e) {
+      if (e is DioError) {
+        if (e.response!.data["status"] == "err") {
+          switch (e.response!.data["code"]) {
+            case "file_too_large":
+              await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("잠시만요!"),
+                  content: const Text("파일이 너무 커요. 한 파일당 최대 용량은 1GB에요."),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("okay"),
+                    ),
+                  ],
+                ),
+              );
+              break;
+            default:
+              await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("잠시만요!"),
+                  content:
+                      Text("오류가 발생했어요. (메시지: ${e.response!.data["message"]})"),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("okay"),
+                    ),
+                  ],
+                ),
+              );
+              break;
+          }
+        }
+      }
+    }
   }
 }
