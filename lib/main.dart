@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
@@ -122,8 +121,6 @@ Future<void> initializeSocket() async {
   );
 
   socket.onConnect((_) {
-    log("connected!");
-    fireServerConnected = true;
     socket.emit('connect server', {"address": deviceId});
   });
 
