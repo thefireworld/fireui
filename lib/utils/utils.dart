@@ -8,6 +8,7 @@ import 'package:fire/utils/server.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../env.dart';
@@ -158,4 +159,8 @@ Future<String> getNewLoginCode(String uid) async {
     '$fireApiUrl/logincode/create/$uid',
   );
   return response.data["code"];
+}
+
+TextStyle text({double? fontSize}) {
+  return GoogleFonts.signikaNegative(textStyle: TextStyle(fontSize: fontSize));
 }

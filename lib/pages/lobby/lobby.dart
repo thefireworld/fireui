@@ -79,12 +79,18 @@ class TitleBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ListTile(
-        title: Text(
-          title,
-          style: const TextStyle(fontSize: 27),
+      child: SizedBox(
+        width: 300,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Text(title, style: text(fontSize: 27)),
+            Positioned(
+              right: 10,
+              child: trailing!,
+            ),
+          ],
         ),
-        trailing: trailing,
       ),
     );
   }
