@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:fire/main.dart';
+import 'package:fire/utils/server.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -12,12 +13,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../env.dart';
 
 export 'textformatter.dart';
+export 'server.dart';
 
 String address = "err";
-
-String fireApiUrl = "https://fire-api.iamsihu.wtf";
-String fireServerUrl = "fire-server.iamsihu.wtf";
-bool fireServerConnected = false;
 
 class FireAccount {
   static FireAccount? _current;
