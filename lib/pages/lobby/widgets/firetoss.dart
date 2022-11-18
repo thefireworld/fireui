@@ -11,9 +11,9 @@ import 'package:fire/main.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:fire/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:qrscan/qrscan.dart';
-import 'package:sn_progress_dialog/progress_dialog.dart';
 
 import '../lobby.dart';
 
@@ -183,16 +183,14 @@ class _FireTossWidgetState extends State<FireTossWidget> {
     }
 
     var formData = FormData.fromMap({'files': uploadFiles});
-    ProgressDialog pd = ProgressDialog(context: context);
-    pd.show(
-      max: 100,
-      msg: 'Sending files...',
-    );
+    EasyLoading.showProgress(0, status: "Uploading files..");
     try {
       final response = await dio.post(
         '$fireApiUrl/file',
         data: formData,
-        onSendProgress: (rec, total) {},
+        onSendProgress: (rec, total) {
+          EasyLoading.showProgress(rec / total, status: "Uploading files..");
+        },
         options: Options(
           headers: {
             "authorization": "Bearer ${Env.fireApiKey}",

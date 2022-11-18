@@ -971,13 +971,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.6"
-  sn_progress_dialog:
-    dependency: "direct main"
-    description:
-      name: sn_progress_dialog
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.8"
   social_login_buttons:
     dependency: "direct main"
     description:
