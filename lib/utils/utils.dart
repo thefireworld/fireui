@@ -1,8 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:dio/dio.dart';
 import 'package:fire/main.dart';
 import 'package:fire/utils/server.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,11 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 
 import '../env.dart';
 
-export 'textformatter.dart';
 export 'server.dart';
+export 'textformatter.dart';
 
 String address = "err";
 
@@ -31,19 +32,13 @@ class FireAccount {
   String get name => _name;
 
   set name(String newName) {
-    var dio = Dio();
-    dio
-        .post(
-          '$fireApiUrl/user/$uid/name',
-          data: {"newName": newName},
-          options: Options(
-            sendTimeout: 5000,
-            headers: {
-              "authorization": "Bearer ${Env.fireApiKey}",
-            },
-          ),
-        )
-        .then((value) {});
+    http.post(
+      Uri.parse('$fireApiUrl/user/$uid/name'),
+      body: {"newName": newName},
+      headers: {
+        "authorization": "Bearer ${Env.fireApiKey}",
+      },
+    );
     _name = newName;
   }
 
@@ -53,21 +48,11 @@ class FireAccount {
   }
 
   static Future<FireAccount?> getFromUid(String uid) async {
-    try {
-      var dio = Dio();
-      final response = await dio.get(
-        '$fireApiUrl/user/$uid',
-        options: Options(sendTimeout: 5000),
-      );
-      return FireAccount._(response.data["uid"], response.data["name"]);
-    } catch (e) {
-      if (e is DioError) {
-        if (e.type == DioErrorType.sendTimeout) {
-          return null;
-        }
-      }
-    }
-    return null;
+    dynamic response = await http.get(
+      Uri.parse('$fireApiUrl/user/$uid'),
+    );
+    response = jsonDecode(response.body);
+    return FireAccount._(response["uid"], response["name"]);
   }
 }
 
@@ -121,7 +106,6 @@ Uint8List decryptFile(Uint8List data, String password) {
 }
 
 void showLoginCode(BuildContext context, String uid) async {
-  var dio = Dio();
   EasyLoading.show();
   String code = await getNewLoginCode(uid);
   EasyLoading.dismiss();
@@ -142,8 +126,8 @@ void showLoginCode(BuildContext context, String uid) async {
             child: const Text('OK'),
             onPressed: () async {
               Navigator.pop(context);
-              await dio.delete(
-                '$fireApiUrl/logincode/$code',
+              await http.delete(
+                Uri.parse('$fireApiUrl/logincode/$code'),
               );
             },
           ),
@@ -154,11 +138,10 @@ void showLoginCode(BuildContext context, String uid) async {
 }
 
 Future<String> getNewLoginCode(String uid) async {
-  var dio = Dio();
-  final response = await dio.get(
-    '$fireApiUrl/logincode/create/$uid',
+  final response = await http.get(
+    Uri.parse('$fireApiUrl/logincode/create/$uid'),
   );
-  return response.data["code"];
+  return jsonDecode(response.body)["code"];
 }
 
 TextStyle text({double? fontSize}) {

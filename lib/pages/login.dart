@@ -1,6 +1,7 @@
+import 'dart:convert';
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:fire/env.dart';
 import 'package:fire/pages/lobby/lobby.dart';
 import 'package:fire/utils/utils.dart';
@@ -133,16 +134,13 @@ class _LoginCodePageState extends State<LoginCodePage> {
       ],
       onCompleted: (code) async {
         EasyLoading.show();
-        Response response;
+        http.Response response;
         try {
-          response = await Dio().post(
-            '$fireApiUrl/logincode/$code',
-            options: Options(
-              headers: {
-                "authorization": "Bearer ${Env.fireApiKey}",
-              },
-              sendTimeout: 1000,
-            ),
+          response = await http.post(
+            Uri.parse('$fireApiUrl/logincode/$code'),
+            headers: {
+              "authorization": "Bearer ${Env.fireApiKey}",
+            },
           );
         } catch (e) {
           EasyLoading.showToast("서버와 연결할 수 없어요.");
@@ -150,9 +148,9 @@ class _LoginCodePageState extends State<LoginCodePage> {
           return;
         }
 
-        if (response.data["userUid"] != null) {
-          FireAccount.current =
-              await FireAccount.getFromUid(response.data["userUid"]);
+        dynamic body = jsonDecode(response.body);
+        if (body["userUid"] != null) {
+          FireAccount.current = await FireAccount.getFromUid(body["userUid"]);
           if (FireAccount.current == null) {
             EasyLoading.showToast("서버와 연결할 수 없어요.");
             return;

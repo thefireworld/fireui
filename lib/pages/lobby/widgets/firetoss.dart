@@ -1,17 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:drag_and_drop_windows/drag_and_drop_windows.dart';
 import 'package:file_icon/file_icon.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:fire/env.dart';
-import 'package:fire/main.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:fire/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 import 'package:qrscan/qrscan.dart';
 
@@ -33,14 +32,14 @@ class _FireTossWidgetState extends State<FireTossWidget> {
   @override
   void initState() {
     if (!isDeviceFound) {
-      var dio = Dio();
-      dio
-          .get('$fireApiUrl/user/${FireAccount.current?.uid}/device/list',
-              options: Options(sendTimeout: 5000))
+      http
+          .get(Uri.parse(
+              '$fireApiUrl/user/${FireAccount.current?.uid}/device/list'))
           .then((value) {
-        for (var value in jsonDecode(value.toString())["devices"]) {
-          if (address != value["address"]) {
-            devices[value["name"]] = value["address"];
+        dynamic body = jsonDecode(value.body);
+        for (var body in body["devices"]) {
+          if (address != body["address"]) {
+            devices[body["name"]] = body["address"];
           }
         }
         setState(() {});
@@ -173,92 +172,51 @@ class _FireTossWidgetState extends State<FireTossWidget> {
   }
 
   Future<void> sendFile(BuildContext context, String address) async {
-    var dio = Dio();
-    List<MultipartFile> uploadFiles = [];
+    var requestMultipart = http.MultipartRequest("POST", Uri.parse('uri'));
     for (var path in files) {
       File file = File(path);
-      uploadFiles.add(MultipartFile.fromBytes(
+      requestMultipart.files.add(
+        http.MultipartFile.fromBytes(
+          path,
           encryptFile(file.readAsBytesSync(), "awesome password"),
-          filename: file.path.replaceFirst(file.parent.path, "").substring(1)));
-    }
-
-    var formData = FormData.fromMap({'files': uploadFiles});
-    EasyLoading.showProgress(0, status: "Uploading files..");
-    try {
-      final response = await dio.post(
-        '$fireApiUrl/file',
-        data: formData,
-        onSendProgress: (rec, total) {
-          EasyLoading.showProgress(rec / total, status: "Uploading files..");
-        },
-        options: Options(
-          headers: {
-            "authorization": "Bearer ${Env.fireApiKey}",
-          },
+          filename: file.path.replaceFirst(file.parent.path, "").substring(1),
         ),
       );
-      if (response.statusCode == 401) {
-        await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("ERROR"),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          ),
-        );
-      }
-      socket.emit("toss", {
-        "files": response.data["files"],
-        "to": address,
-      });
-    } catch (e) {
-      if (e is DioError) {
-        if (e.response!.data["status"] == "err") {
-          switch (e.response!.data["code"]) {
-            case "file_too_large":
-              await showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("잠시만요!"),
-                  content: const Text("파일이 너무 커요. 한 파일당 최대 용량은 1GB에요."),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("okay"),
-                    ),
-                  ],
-                ),
-              );
-              break;
-            default:
-              await showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("잠시만요!"),
-                  content:
-                      Text("오류가 발생했어요. (메시지: ${e.response!.data["message"]})"),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("okay"),
-                    ),
-                  ],
-                ),
-              );
-              break;
-          }
-        }
-      }
     }
+
+    EasyLoading.showProgress(0, status: "Uploading files..");
+
+    final url = '$fireApiUrl/api/file';
+    final httpClient = HttpClient();
+    final request = await httpClient.postUrl(Uri.parse(url));
+    double byteCount = 0;
+    var msStream = requestMultipart.finalize();
+    var totalByteLength = requestMultipart.contentLength;
+    request.contentLength = totalByteLength;
+
+    Stream<List<int>> streamUpload = msStream.transform(
+      StreamTransformer.fromHandlers(
+        handleData: (data, sink) {
+          sink.add(data);
+
+          byteCount += data.length;
+
+          EasyLoading.showProgress(byteCount / totalByteLength,
+              status: "Uploading files.. ${byteCount / totalByteLength}");
+          log("${byteCount / totalByteLength}");
+        },
+        handleError: (error, stack, sink) {
+          throw error;
+        },
+        handleDone: (sink) {
+          sink.close();
+          // UPLOAD DONE;
+        },
+      ),
+    );
+
+    await request.addStream(streamUpload);
+
+    await request.close();
   }
 }

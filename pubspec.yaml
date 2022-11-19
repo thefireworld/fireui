@@ -43,7 +43,6 @@ dependencies:
   socket_io_client: ^1.0.2
   path_provider: ^2.0.11
   downloads_path_provider_28: ^0.1.2
-  dio: ^4.0.6
   internet_file: ^1.2.0
   file_picker: ^5.0.1
   uuid: ^3.0.6
@@ -74,6 +73,7 @@ dependencies:
   firebase_core: ^2.2.0
   iconsax: ^0.0.8
   google_fonts: ^3.0.1
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:
