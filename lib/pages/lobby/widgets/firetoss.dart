@@ -148,6 +148,14 @@ class _FireTossWidgetState extends State<FireTossWidget> {
           leading: FileIcon(filename),
           title: Text(filename),
           subtitle: Text(value.replaceAll(filename, "")),
+          trailing: IconButton(
+            onPressed: () {
+              setState(() {
+                files.remove(value);
+              });
+            },
+            icon: const Icon(Iconsax.minus_cirlce),
+          ),
         ),
       );
     }
