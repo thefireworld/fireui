@@ -144,6 +144,11 @@ Future<String> getNewLoginCode(String uid) async {
   return jsonDecode(response.body)["code"];
 }
 
-TextStyle text({double? fontSize}) {
-  return GoogleFonts.signikaNegative(textStyle: TextStyle(fontSize: fontSize));
+TextStyle text({double? fontSize, bool bold = false}) {
+  return GoogleFonts.signikaNegative(
+    textStyle: TextStyle(
+      fontSize: fontSize,
+      fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+    ),
+  );
 }

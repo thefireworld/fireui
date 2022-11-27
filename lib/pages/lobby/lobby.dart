@@ -1,8 +1,10 @@
 import 'package:fire/main.dart';
 import 'package:fire/pages/lobby/widgets/account.dart';
 import 'package:fire/pages/lobby/widgets/firetoss.dart';
+import 'package:fire/pages/messages/home.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class LobbyPage extends StatefulWidget {
@@ -32,21 +34,36 @@ class _LobbyPageState extends State<LobbyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Fire",
+          style: text(fontSize: 35, bold: true),
+        ),
+      ),
       backgroundColor: Colors.white,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MessageHomePage(),
+            ),
+          );
+        },
+        backgroundColor: Colors.green,
+        child: const Icon(Iconsax.message),
+      ),
       body: SafeArea(
         child: SizedBox.expand(
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(0, 25, 0, 0),
-            child: SingleChildScrollView(
-              child: Wrap(
-                spacing: 25,
-                runSpacing: 25,
-                alignment: WrapAlignment.center,
-                children: [
-                  make(const AccountWidget()),
-                  make(const FireTossWidget()),
-                ],
-              ),
+          child: SingleChildScrollView(
+            child: Wrap(
+              spacing: 25,
+              runSpacing: 25,
+              alignment: WrapAlignment.center,
+              children: [
+                make(const AccountWidget()),
+                make(const FireTossWidget()),
+              ],
             ),
           ),
         ),
@@ -59,7 +76,7 @@ class _LobbyPageState extends State<LobbyPage> {
       width: 300,
       height: 300,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Colors.grey[200],
         borderRadius: const BorderRadius.all(
           Radius.circular(20),
         ),
