@@ -1,25 +1,24 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:http/http.dart' as http;
 import 'package:fire/env.dart';
 import 'package:fire/pages/lobby/lobby.dart';
 import 'package:fire/utils/utils.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:http/http.dart' as http;
 import 'package:pinput/pinput.dart';
-import 'package:social_login_buttons/social_login_buttons.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class LoginCodePage extends StatefulWidget {
-  const LoginCodePage({Key? key}) : super(key: key);
+class LoginIdentifyPage extends StatefulWidget {
+  final String emailAddress;
+
+  const LoginIdentifyPage(this.emailAddress, {Key? key}) : super(key: key);
 
   @override
-  State<LoginCodePage> createState() => _LoginCodePageState();
+  State<LoginIdentifyPage> createState() => _LoginIdentifyPageState();
 }
 
-class _LoginCodePageState extends State<LoginCodePage> {
+class _LoginIdentifyPageState extends State<LoginIdentifyPage> {
   final _loginCodeController = TextEditingController();
 
   @override
@@ -31,68 +30,29 @@ class _LoginCodePageState extends State<LoginCodePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
-              "로그인 코드를 입력해주세요.",
+              "이메일로 전송된 코드를 입력해주세요.",
               style: TextStyle(
                 fontSize: 25,
               ),
             ),
             const SizedBox(height: 10),
-            codeInput(),
-            const SizedBox(height: 20),
-            MaterialButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                      title: const Text("어떻게 로그인하나요?"),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text("1. 스마트폰, Mac에서 Fire를 설치한 후 로그인합니다."),
-                          Text("2. Account 위젯에 오른쪽 상단 로그인 버튼을 누릅니다."),
-                          Text("3. 화면에 표시되는 코드를 입력해주세요."),
-                        ],
-                      ),
-                      actions: <Widget>[
-                        ElevatedButton(
-                          child: const Text("확인"),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: const Text("어떻게 로그인하나요?"),
-            ),
-            MaterialButton(
-              onPressed: () async {
-                if (!await launchUrl(
-                    Uri.parse("https://thefire-world.web.app"))) {
-                  EasyLoading.showError("웹페이지를 여는데 실패했습니다.");
+            FutureBuilder(
+              future: _sendMail(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData == false) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Error: ${snapshot.error}',
+                      style: const TextStyle(fontSize: 15),
+                    ),
+                  );
+                } else {
+                  return codeInput();
                 }
               },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Text("웹에서 코드 받기"),
-                  Chip(
-                    padding: EdgeInsets.all(0),
-                    label: Text(
-                      'Beta',
-                      style: TextStyle(color: Colors.white, fontSize: 13),
-                    ),
-                  ),
-                ],
-              ),
             ),
           ],
         ),
@@ -170,54 +130,82 @@ class _LoginCodePageState extends State<LoginCodePage> {
       },
     );
   }
+
+  Future<String> _sendMail() async {
+    final response = await http.post(
+      Uri.parse('$fireApiUrl/login/${widget.emailAddress}'),
+    );
+    return jsonDecode(response.body)["authCode"];
+  }
 }
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginEmailPage extends StatefulWidget {
+  const LoginEmailPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginEmailPage> createState() => _LoginEmailPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginEmailPageState extends State<LoginEmailPage> {
+  final emailField = TextEditingController();
+
+  String? validateEmail(String? value) {
+    bool can = false;
+    if (value == null) {
+      return '올바른 이메일을 입력해주세요.';
+    }
+
+    if (value.endsWith("@gmail.com")) {
+      Future.delayed(const Duration(milliseconds: 1), () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginIdentifyPage(value),
+          ),
+        );
+      });
+      return null;
+    } else {
+      return '이메일은 @gmail.com으로 끝나야합니다.';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: SizedBox(
-          width: 254,
-          child: SocialLoginButton(
-            buttonType: SocialLoginButtonType.google,
-            onPressed: () async {
-              EasyLoading.show();
-              final credential = await signInWithGoogle();
-              if (credential.credential != null) {
-                if (kIsWeb) {
-                  if (!mounted) return;
-                  showLoginCode(context, credential.user!.uid);
-                  return;
-                }
-
-                FireAccount.current =
-                    await FireAccount.getFromUid(credential.user!.uid);
-
-                if (FireAccount.current == null) {
-                  EasyLoading.showToast("서버와 연결할 수 없어요.");
-                } else {
-                  EasyLoading.showToast("로그인 완료: ${FireAccount.current!.name}");
-                  if (!mounted) return;
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LobbyPage(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              "이메일 주소를 입력해주세요. ",
+              style: TextStyle(
+                fontSize: 25,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 300,
+                  child: Form(
+                    autovalidateMode: AutovalidateMode.always,
+                    child: TextFormField(
+                      controller: emailField,
+                      decoration: const InputDecoration(
+                        labelText: "Email",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) => validateEmail(value),
                     ),
-                  );
-                }
-                return;
-              }
-              EasyLoading.showToast("로그인에 실패했습니다.");
-            },
-          ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ],
+            ),
+          ],
         ),
       ),
     );

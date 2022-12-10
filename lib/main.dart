@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:fire/pages/login.dart';
 import 'package:fire/utils/utils.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -14,8 +13,6 @@ import 'package:internet_file/internet_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 import 'package:socket_io_client/socket_io_client.dart';
-
-import 'firebase_options.dart';
 
 late Socket socket;
 
@@ -49,27 +46,17 @@ void main(List<String> arguments) async {
 
   await Hive.initFlutter();
 
-  if (kIsWeb || Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
 
-    runApp(MaterialApp(
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
-      home: const LoginPage(),
-      builder: EasyLoading.init(),
-    ));
-  } else {
-    runApp(MaterialApp(
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
-      home: const LoginCodePage(),
-      builder: EasyLoading.init(),
-    ));
-  }
+  runApp(MaterialApp(
+    theme: ThemeData(
+      useMaterial3: true,
+    ),
+    home: const LoginEmailPage(),
+    builder: EasyLoading.init(),
+  ));
 }
 
 void initializeFireToss() {

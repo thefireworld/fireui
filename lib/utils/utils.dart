@@ -33,7 +33,7 @@ class FireAccount {
 
   set name(String newName) {
     http.post(
-      Uri.parse('$fireApiUrl/user/$uid/name'),
+      Uri.parse('$fireApiUrl/user/$uid/update/name'),
       body: {"newName": newName},
       headers: {
         "authorization": "Bearer ${Env.fireApiKey}",
@@ -54,24 +54,6 @@ class FireAccount {
     response = jsonDecode(response.body);
     return FireAccount._(response["uid"], response["name"]);
   }
-}
-
-Future<UserCredential> signInWithGoogle() async {
-  // Trigger the authentication flow
-  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-  // Obtain the auth details from the request
-  final GoogleSignInAuthentication? googleAuth =
-      await googleUser?.authentication;
-
-  // Create a new credential
-  final credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth?.accessToken,
-    idToken: googleAuth?.idToken,
-  );
-
-  // Once signed in, return the UserCredential
-  return await FirebaseAuth.instance.signInWithCredential(credential);
 }
 
 Future<String?> getDeviceName() async {
