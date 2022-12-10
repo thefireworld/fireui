@@ -134,6 +134,9 @@ class _LoginIdentifyPageState extends State<LoginIdentifyPage> {
   Future<String> _sendMail() async {
     final response = await http.post(
       Uri.parse('$fireApiUrl/login/${widget.emailAddress}'),
+      headers: {
+        "Authorization": "Bearer ${Env.fireApiKey}",
+      },
     );
     return jsonDecode(response.body)["authCode"];
   }
@@ -150,7 +153,6 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
   final emailField = TextEditingController();
 
   String? validateEmail(String? value) {
-    bool can = false;
     if (value == null) {
       return '올바른 이메일을 입력해주세요.';
     }
@@ -166,7 +168,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
       });
       return null;
     } else {
-      return '이메일은 @gmail.com으로 끝나야합니다.';
+      return '사용이 불가능한 이메일입니다.';
     }
   }
 
