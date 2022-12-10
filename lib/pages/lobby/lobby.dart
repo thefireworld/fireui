@@ -1,8 +1,10 @@
 import 'package:fire/main.dart';
 import 'package:fire/pages/lobby/widgets/account.dart';
 import 'package:fire/pages/lobby/widgets/firetoss.dart';
+import 'package:fire/pages/messages/home.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class LobbyPage extends StatefulWidget {
@@ -39,18 +41,18 @@ class _LobbyPageState extends State<LobbyPage> {
         ),
       ),
       backgroundColor: Colors.white,
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) => const MessageHomePage(),
-      //       ),
-      //     );
-      //   },
-      //   backgroundColor: Colors.green,
-      //   child: const Icon(Iconsax.message),
-      // ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MessageHomePage(),
+            ),
+          );
+        },
+        backgroundColor: Colors.green,
+        child: const Icon(Iconsax.message),
+      ),
       body: SafeArea(
         child: SizedBox.expand(
           child: SingleChildScrollView(
