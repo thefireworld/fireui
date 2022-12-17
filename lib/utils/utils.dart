@@ -6,7 +6,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fire/main.dart';
 import 'package:fire/utils/server.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
@@ -83,45 +82,6 @@ Uint8List encryptFile(Uint8List data, String password) {
 
 Uint8List decryptFile(Uint8List data, String password) {
   return data;
-}
-
-void showLoginCode(BuildContext context, String uid) async {
-  EasyLoading.show();
-  String code = await getNewLoginCode(uid);
-  EasyLoading.dismiss();
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("데스크톱에서 로그인"),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              Text("로그인코드: $code"),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          ElevatedButton(
-            child: const Text('OK'),
-            onPressed: () async {
-              Navigator.pop(context);
-              await http.delete(
-                Uri.parse('$fireApiUrl/logincode/$code'),
-              );
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-Future<String> getNewLoginCode(String uid) async {
-  final response = await http.get(
-    Uri.parse('$fireApiUrl/logincode/create/$uid'),
-  );
-  return jsonDecode(response.body)["code"];
 }
 
 TextStyle text({double? fontSize, bool bold = false}) {

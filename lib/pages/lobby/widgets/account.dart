@@ -42,9 +42,9 @@ class _AccountWidgetState extends State<AccountWidget> {
           "Account",
           InkWell(
             onTap: () {
-              showLoginCode(context, FireAccount.current!.uid);
+              //TODO logout
             },
-            child: const Icon(Iconsax.scan_barcode),
+            child: const Icon(Iconsax.logout),
           ),
         ),
         Expanded(

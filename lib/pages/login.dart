@@ -50,7 +50,11 @@ class _LoginIdentifyPageState extends State<LoginIdentifyPage> {
                     ),
                   );
                 } else {
-                  return codeInput();
+                  if (snapshot.data != null) {
+                    return codeInput(snapshot.data);
+                  } else {
+                    return const Text("Error");
+                  }
                 }
               },
             ),
@@ -60,7 +64,7 @@ class _LoginIdentifyPageState extends State<LoginIdentifyPage> {
     );
   }
 
-  Widget codeInput() {
+  Widget codeInput(String authCode) {
     final defaultPinTheme = PinTheme(
       width: 56,
       height: 56,
@@ -96,8 +100,8 @@ class _LoginIdentifyPageState extends State<LoginIdentifyPage> {
         EasyLoading.show();
         http.Response response;
         try {
-          response = await http.post(
-            Uri.parse('$fireApiUrl/logincode/$code'),
+          response = await http.get(
+            Uri.parse('$fireApiUrl/login/$authCode/$code'),
             headers: {
               "authorization": "Bearer ${Env.fireApiKey}",
             },
@@ -108,6 +112,7 @@ class _LoginIdentifyPageState extends State<LoginIdentifyPage> {
           return;
         }
 
+        log(response.body);
         dynamic body = jsonDecode(response.body);
         if (body["userUid"] != null) {
           FireAccount.current = await FireAccount.getFromUid(body["userUid"]);
@@ -131,7 +136,7 @@ class _LoginIdentifyPageState extends State<LoginIdentifyPage> {
     );
   }
 
-  Future<String> _sendMail() async {
+  Future<String?> _sendMail() async {
     final response = await http.post(
       Uri.parse('$fireApiUrl/login/${widget.emailAddress}'),
       headers: {

@@ -32,12 +32,12 @@ class _LobbyPageState extends State<LobbyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Fire",
-          style: text(fontSize: 35, bold: true),
-        ),
-      ),
+      // appBar: AppBar(
+      //   title: Text(
+      //     "Fire",
+      //     style: text(fontSize: 35, bold: true),
+      //   ),
+      // ),
       backgroundColor: Colors.white,
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {
