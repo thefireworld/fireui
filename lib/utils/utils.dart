@@ -31,7 +31,7 @@ class FireAccount {
   set name(String newName) {
     http.post(
       Uri.parse('$fireApiUrl/user/$uid/update/name'),
-      body: {"newName": newName},
+      body: newName,
       headers: {
         "authorization": "Bearer ${Env.fireApiKey}",
       },
