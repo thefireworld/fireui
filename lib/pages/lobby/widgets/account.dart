@@ -1,4 +1,5 @@
 import 'package:fire/main.dart';
+import 'package:fire/pages/login.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -42,9 +43,15 @@ class _AccountWidgetState extends State<AccountWidget> {
           "Account",
           InkWell(
             onTap: () {
-              showLoginCode(context, FireAccount.current!.uid);
+              FireAccount.current = null;
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginEmailPage(),
+                ),
+              );
             },
-            child: const Icon(Iconsax.scan_barcode),
+            child: const Icon(Iconsax.logout),
           ),
         ),
         Expanded(
@@ -68,14 +75,6 @@ class _AccountWidgetState extends State<AccountWidget> {
                       }
                     });
                   },
-                ),
-              ),
-              ListTile(
-                leading: const Text("기기 ID"),
-                title: Text(address),
-                trailing: IconButton(
-                  icon: const Icon(Iconsax.copy),
-                  onPressed: () {},
                 ),
               ),
             ],
