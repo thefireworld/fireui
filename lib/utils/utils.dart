@@ -41,7 +41,9 @@ class FireAccount {
 
   static set current(FireAccount? account) {
     _current = account;
-    socket.emit("login", account?.uid);
+    if (account != null) {
+      socket.emit("login", account.uid);
+    }
   }
 
   static Future<FireAccount?> getFromUid(String uid) async {
