@@ -195,14 +195,14 @@ class _FindDeviceWidgetState extends State<_FindDeviceWidget> {
   }
 }
 
-class FireTossWidget extends StatefulWidget {
-  const FireTossWidget({Key? key}) : super(key: key);
+class FireTossTile extends StatefulWidget {
+  const FireTossTile({Key? key}) : super(key: key);
 
   @override
-  State<FireTossWidget> createState() => _FireTossWidgetState();
+  State<FireTossTile> createState() => _FireTossTileState();
 }
 
-class _FireTossWidgetState extends State<FireTossWidget> {
+class _FireTossTileState extends State<FireTossTile> {
   late List<Widget> contents;
   int step = 0;
 

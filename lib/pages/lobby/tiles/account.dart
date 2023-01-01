@@ -5,14 +5,14 @@ import 'package:iconsax/iconsax.dart';
 
 import '../lobby.dart';
 
-class AccountWidget extends StatefulWidget {
-  const AccountWidget({Key? key}) : super(key: key);
+class AccountTile extends StatefulWidget {
+  const AccountTile({Key? key}) : super(key: key);
 
   @override
-  State<AccountWidget> createState() => _AccountWidgetState();
+  State<AccountTile> createState() => _AccountTileState();
 }
 
-class _AccountWidgetState extends State<AccountWidget> {
+class _AccountTileState extends State<AccountTile> {
   bool isRenaming = false;
   TextEditingController renameController = TextEditingController();
 

@@ -1,6 +1,6 @@
 import 'package:fire/main.dart';
-import 'package:fire/pages/lobby/widgets/account.dart';
-import 'package:fire/pages/lobby/widgets/firetoss.dart';
+import 'package:fire/pages/lobby/tiles/account.dart';
+import 'package:fire/pages/lobby/tiles/firetoss.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -43,8 +43,8 @@ class _LobbyPageState extends State<LobbyPage> {
                 runSpacing: 25,
                 alignment: WrapAlignment.center,
                 children: [
-                  make(const AccountWidget()),
-                  make(const FireTossWidget()),
+                  make(const AccountTile()),
+                  make(const FireTossTile()),
                 ],
               ),
             ),
