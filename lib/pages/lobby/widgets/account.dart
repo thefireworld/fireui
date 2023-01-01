@@ -1,5 +1,4 @@
 import 'package:fire/main.dart';
-import 'package:fire/pages/login.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -41,46 +40,64 @@ class _AccountWidgetState extends State<AccountWidget> {
       children: [
         TitleBar(
           "Account",
-          InkWell(
+          trailing: InkWell(
             onTap: () {
-              FireAccount.current = null;
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginEmailPage(),
-                ),
-              );
+              setState(() {
+                FireAccount.current = null;
+              });
             },
             child: const Icon(Iconsax.logout),
           ),
         ),
-        Expanded(
-          child: Column(
-            children: [
-              ListTile(
-                leading: const Text("Name"),
-                title: isRenaming
-                    ? TextField(controller: renameController)
-                    : Text(FireAccount.current!.name),
-                trailing: IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    setState(() {
-                      if (isRenaming) {
-                        FireAccount.current!.name = renameController.text;
-                        isRenaming = false;
-                      } else {
-                        renameController.text = FireAccount.current!.name;
-                        isRenaming = true;
-                      }
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
+        body(),
       ],
     );
+  }
+
+  Widget body() {
+    if (FireAccount.current != null) {
+      return Expanded(
+        child: Column(
+          children: [
+            ListTile(
+              leading: const Text("Name"),
+              title: isRenaming
+                  ? TextField(controller: renameController)
+                  : Text(FireAccount.current!.name),
+              trailing: IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  setState(() {
+                    if (isRenaming) {
+                      FireAccount.current!.name = renameController.text;
+                      isRenaming = false;
+                    } else {
+                      renameController.text = FireAccount.current!.name;
+                      isRenaming = true;
+                    }
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Expanded(
+        child: Column(
+          children: [
+            const SizedBox(height: 60),
+            Text(
+              "Fire에 로그인하세요!",
+              style: text(fontSize: 23, bold: true),
+            ),
+            IconButton(
+              onPressed: () {}, // TODO: 로그인 기능
+              icon: const Icon(Iconsax.login),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }

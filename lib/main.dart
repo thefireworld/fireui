@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
-import 'package:fire/pages/login.dart';
+import 'package:fire/pages/lobby/lobby.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +54,7 @@ void main(List<String> arguments) async {
     theme: ThemeData(
       useMaterial3: true,
     ),
-    home: const LoginEmailPage(),
+    home: const LobbyPage(),
     builder: EasyLoading.init(),
   ));
 }

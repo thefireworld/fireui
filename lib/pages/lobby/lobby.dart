@@ -32,24 +32,21 @@ class _LobbyPageState extends State<LobbyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(
-      //     "Fire",
-      //     style: text(fontSize: 35, bold: true),
-      //   ),
-      // ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SizedBox.expand(
-          child: SingleChildScrollView(
-            child: Wrap(
-              spacing: 25,
-              runSpacing: 25,
-              alignment: WrapAlignment.center,
-              children: [
-                make(const AccountWidget()),
-                make(const FireTossWidget()),
-              ],
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 25, 0, 0),
+            child: SingleChildScrollView(
+              child: Wrap(
+                spacing: 25,
+                runSpacing: 25,
+                alignment: WrapAlignment.center,
+                children: [
+                  make(const AccountWidget()),
+                  make(const FireTossWidget()),
+                ],
+              ),
             ),
           ),
         ),
@@ -76,7 +73,7 @@ class TitleBar extends StatelessWidget {
   final String title;
   final Widget? trailing;
 
-  const TitleBar(this.title, this.trailing, {Key? key}) : super(key: key);
+  const TitleBar(this.title, {Key? key, this.trailing}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +87,7 @@ class TitleBar extends StatelessWidget {
             Text(title, style: text(fontSize: 27)),
             Positioned(
               right: 10,
-              child: trailing!,
+              child: trailing ?? Container(),
             ),
           ],
         ),
