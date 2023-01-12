@@ -41,7 +41,7 @@ jobs:
       - name: Build
         run: flutter build macos --no-tree-shake-icons --release
         
-      - run: cd build && ls
+      - run: brew install tree && cd build && tree
 
       - name: Archive Release
         uses: thedoctor0/zip-release@main
