@@ -40,6 +40,24 @@ jobs:
 
       - name: Build
         run: flutter build macos --no-tree-shake-icons --release
+        
+      - run: cd build && ls
+
+      - name: Archive Release
+        uses: thedoctor0/zip-release@main
+        with:
+          type: 'zip'
+          filename: 'release.zip'
+          directory: build/macos/x64/release/bundle
+
+      - name: Upload Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "macos"
+          prerelease: false
+          files: |
+            build/macos/x64/release/bundle/release.zip
 
   build-linux:
     runs-on: ubuntu-latest
