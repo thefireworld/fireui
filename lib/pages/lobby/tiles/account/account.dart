@@ -1,52 +1,11 @@
 import 'package:fire/main.dart';
+import 'package:fire/pages/lobby/lobby.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
-import '../../lobby.dart';
+import 'info.dart';
 import 'loggedOut.dart';
-
-class _AccountInfoBody extends StatefulWidget {
-  const _AccountInfoBody({Key? key}) : super(key: key);
-
-  @override
-  State<_AccountInfoBody> createState() => _AccountInfoBodyState();
-}
-
-class _AccountInfoBodyState extends State<_AccountInfoBody> {
-  bool isRenaming = false;
-  TextEditingController renameController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          ListTile(
-            leading: const Text("Name"),
-            title: isRenaming
-                ? TextField(controller: renameController)
-                : Text(FireAccount.current!.name),
-            trailing: IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () {
-                setState(() {
-                  if (isRenaming) {
-                    FireAccount.current!.name = renameController.text;
-                    isRenaming = false;
-                  } else {
-                    renameController.text = FireAccount.current!.name;
-                    isRenaming = true;
-                  }
-                });
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class AccountTile extends StatefulWidget {
   const AccountTile({Key? key}) : super(key: key);
@@ -91,7 +50,7 @@ class _AccountTileState extends State<AccountTile> {
             child: const Icon(Iconsax.logout),
           ),
         ),
-        if (FireAccount.current != null) const _AccountInfoBody(),
+        if (FireAccount.current != null) const AccountInfoBody(),
         if (FireAccount.current == null) const LoggedOutBody(),
       ],
     );
