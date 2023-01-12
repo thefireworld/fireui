@@ -2,4 +2,5 @@
 ### [iPhone/iPad (W.I.P.)](#)
 ### [Windows](https://github.com/thefireworld/fire/releases/download/windows/release.zip)
 ### [Linux](https://github.com/thefireworld/fire/releases/download/linux/release.zip)
-### [Mac (W.I.P.)](#)
+### [Mac (Apple Silicon)](https://github.com/thefireworld/fire/releases/download/macos/release-applesilicon.zip)
+### [Mac (Intel)](https://github.com/thefireworld/fire/releases/download/macos/release-intel.zip)
