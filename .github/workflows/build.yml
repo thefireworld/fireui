@@ -46,14 +46,14 @@ jobs:
         with:
           type: 'zip'
           filename: 'release-applesilicon.zip'
-          directory: build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/arm64/Binary/fire
+          directory: build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/arm64/Binary
 
       - name: Archive Release (X86_64)
         uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
           filename: 'release-intel.zip'
-          directory: build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/x86_64/Binary/fire
+          directory: build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/x86_64/Binary
 
       - name: Upload Release
         uses: "marvinpinto/action-automatic-releases@latest"
