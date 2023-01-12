@@ -40,6 +40,30 @@ jobs:
 
       - name: Build
         run: flutter build macos --no-tree-shake-icons --release
+        
+      - name: Archive Release (ARM64)
+        uses: thedoctor0/zip-release@main
+        with:
+          type: 'zip'
+          filename: 'release-applesilicon.zip'
+          directory: build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/arm64/Binary
+
+      - name: Archive Release (X86_64)
+        uses: thedoctor0/zip-release@main
+        with:
+          type: 'zip'
+          filename: 'release-intel.zip'
+          directory: build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/x86_64/Binary
+
+      - name: Upload Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "macos"
+          prerelease: false
+          files: |
+           build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/arm64/Binary/release-applesilicon.zip
+           build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/x86_64/Binary/release-intel.zip
 
   build-linux:
     runs-on: ubuntu-latest
