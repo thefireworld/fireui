@@ -59,7 +59,17 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "macos"
+          automatic_release_tag: "macos-${{github.run_number}}"
+          prerelease: false
+          files: |
+           build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/arm64/Binary/release-applesilicon.zip
+           build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/x86_64/Binary/release-intel.zip
+
+      - name: Upload Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "macos-latest"
           prerelease: false
           files: |
            build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/arm64/Binary/release-applesilicon.zip
@@ -108,7 +118,16 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "linux"
+          automatic_release_tag: "linux-${{github.run_number}}"
+          prerelease: false
+          files: |
+            build/linux/x64/release/bundle/release.zip
+
+      - name: Upload Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "linux-latest"
           prerelease: false
           files: |
             build/linux/x64/release/bundle/release.zip
@@ -151,7 +170,16 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "windows"
+          automatic_release_tag: "windows-${{github.run_number}}"
+          prerelease: false
+          files: |
+            build/windows/runner/Release/release.zip
+
+      - name: Upload Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "windows-latest"
           prerelease: false
           files: |
             build/windows/runner/Release/release.zip
@@ -184,7 +212,16 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "android"
+          automatic_release_tag: "android-${{github.run_number}}"
+          prerelease: false
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "android-latest"
           prerelease: false
           files: |
             build/app/outputs/flutter-apk/app-release.apk
