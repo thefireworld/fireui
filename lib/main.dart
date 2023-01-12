@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:fire/pages/lobby/lobby.dart';
-import 'package:fire/utils/rebuild.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
