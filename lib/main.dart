@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:fire/pages/lobby/lobby.dart';
+import 'package:fire/utils/rebuild.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:platform_device_id/platform_device_id.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 late Socket socket;
+RebuildController rebuildController = RebuildController();
 
 void main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,7 +56,10 @@ void main(List<String> arguments) async {
     theme: ThemeData(
       useMaterial3: true,
     ),
-    home: const LobbyPage(),
+    home: RebuildWrapper(
+      controller: rebuildController,
+      child: const LobbyPage(),
+    ),
     builder: EasyLoading.init(),
   ));
 }

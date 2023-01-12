@@ -94,15 +94,3 @@ TextStyle text({double? fontSize, bool bold = false}) {
     ),
   );
 }
-
-String? validateEmail(String? value) {
-  if (value == null) {
-    return '올바른 이메일을 입력해주세요.';
-  }
-
-  if (value.endsWith("@gmail.com")) {
-    return null;
-  } else {
-    return '사용이 불가능한 이메일입니다.';
-  }
-}

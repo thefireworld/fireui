@@ -168,7 +168,7 @@ class _ToAccountWidgetState extends State<_ToAccountWidget> {
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
               ),
-              validator: (value) => validateEmail(value),
+              // validator: (value) => validateEmail(value),
             ),
           ),
         ),

@@ -1,5 +1,5 @@
 import 'package:fire/main.dart';
-import 'package:fire/pages/lobby/tiles/account.dart';
+import 'package:fire/pages/lobby/tiles/account/account.dart';
 import 'package:fire/pages/lobby/tiles/firetoss.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
