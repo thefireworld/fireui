@@ -55,7 +55,7 @@ jobs:
           filename: 'release-intel.zip'
           directory: build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/x86_64/Binary
 
-      - name: Upload Release
+      - name: Upload Release (Archive)
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -65,7 +65,7 @@ jobs:
            build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/arm64/Binary/release-applesilicon.zip
            build/macos/Build/Intermediates.noindex/Runner.build/Release/Runner.build/Objects-normal/x86_64/Binary/release-intel.zip
 
-      - name: Upload Release
+      - name: Upload Release (Latest)
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -114,7 +114,7 @@ jobs:
           filename: 'release.zip'
           directory: build/linux/x64/release/bundle
 
-      - name: Upload Release
+      - name: Upload Release (Archive)
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -123,7 +123,7 @@ jobs:
           files: |
             build/linux/x64/release/bundle/release.zip
 
-      - name: Upload Release
+      - name: Upload Release (Latest)
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -166,7 +166,7 @@ jobs:
           filename: 'release.zip'
           directory: build/windows/runner/Release
 
-      - name: Upload Release
+      - name: Upload Release (Archive)
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -175,7 +175,7 @@ jobs:
           files: |
             build/windows/runner/Release/release.zip
 
-      - name: Upload Release
+      - name: Upload Release (Latest)
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -208,7 +208,7 @@ jobs:
       - name: Build
         run: flutter build apk --no-tree-shake-icons --release
 
-      - name: Upload Release
+      - name: Upload Release (Archive)
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -217,7 +217,7 @@ jobs:
           files: |
             build/app/outputs/flutter-apk/app-release.apk
 
-      - name: Upload Release
+      - name: Upload Release (Latest)
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
