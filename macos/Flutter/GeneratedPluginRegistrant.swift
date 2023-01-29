@@ -8,11 +8,11 @@ import Foundation
 import device_info_plus
 import flutter_local_notifications
 import flutter_platform_alert
-import path_provider_macos
+import path_provider_foundation
 import platform_device_id
 import platform_device_id_macos
 import screen_retriever
-import shared_preferences_macos
+import shared_preferences_foundation
 import smart_auth
 import url_launcher_macos
 import window_manager
