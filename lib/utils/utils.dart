@@ -6,14 +6,13 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fire/main.dart';
 import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 import '../env.dart';
 
+export 'rebuild.dart';
 export 'server.dart';
 export 'textformatter.dart';
-export 'rebuild.dart';
 
 String address = "err";
 
@@ -88,10 +87,9 @@ Uint8List decryptFile(Uint8List data, String password) {
 }
 
 TextStyle text({double? fontSize, bool bold = false}) {
-  return GoogleFonts.doHyeon(
-    textStyle: TextStyle(
-      fontSize: fontSize,
-      fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-    ),
+  return TextStyle(
+    fontSize: fontSize,
+    fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+    fontFamily: "Pretendard",
   );
 }
