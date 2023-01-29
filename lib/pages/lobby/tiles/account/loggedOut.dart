@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:fire/env.dart';
 import 'package:fire/main.dart';
@@ -107,19 +108,11 @@ class _LoginIdentifyState extends State<_LoginIdentify> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData == false) {
               return const CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Error: ${snapshot.error}',
-                  style: const TextStyle(fontSize: 15),
-                ),
-              );
             } else {
               if (snapshot.data != null) {
                 return codeInput(snapshot.data);
               } else {
-                return const Text("Error");
+                return const Icon(Iconsax.close_circle);
               }
             }
           },
@@ -134,7 +127,14 @@ class _LoginIdentifyState extends State<_LoginIdentify> {
       headers: {
         "Authorization": "Bearer ${Env.fireApiKey}",
       },
+    ).timeout(
+      const Duration(seconds: 5),
+      onTimeout: () {
+        log("sdafsafdf");
+        return Future.value(http.Response("", 0));
+      },
     );
+    if (response.statusCode == 0) return null;
     return jsonDecode(response.body)["authCode"];
   }
 
