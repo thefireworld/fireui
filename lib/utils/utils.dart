@@ -88,7 +88,7 @@ Uint8List decryptFile(Uint8List data, String password) {
 }
 
 TextStyle text({double? fontSize, bool bold = false}) {
-  return GoogleFonts.signikaNegative(
+  return GoogleFonts.doHyeon(
     textStyle: TextStyle(
       fontSize: fontSize,
       fontWeight: bold ? FontWeight.bold : FontWeight.normal,
