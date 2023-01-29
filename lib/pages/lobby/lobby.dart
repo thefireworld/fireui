@@ -33,10 +33,13 @@ class _LobbyPageState extends State<LobbyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Center(child: Image.asset("assets/logo.png", height: 50)),
+      ),
       body: SafeArea(
-        child: SizedBox.expand(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 25, 0, 0),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+          child: SizedBox.expand(
             child: SingleChildScrollView(
               child: Wrap(
                 spacing: 25,
