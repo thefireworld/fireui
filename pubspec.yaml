@@ -97,7 +97,7 @@ flutter:
   fonts:
     - family: Pretendard
       fonts:
-        - asset: assets/fonts/Pretendard-Regular.ttf
+        - asset: fonts/Pretendard-Regular.ttf
 
   generate: true
 
