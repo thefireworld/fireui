@@ -13,6 +13,7 @@ import 'package:internet_file/internet_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:window_manager/window_manager.dart';
 
 late Socket socket;
 RebuildController rebuildController = RebuildController();
@@ -20,36 +21,26 @@ RebuildController rebuildController = RebuildController();
 void main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // if (arguments.isNotEmpty) {
-  //   if (arguments[0] == "toss") {
-  //     if (arguments.length > 1) {
-  //       runApp(
-  //         MaterialApp(
-  //           theme: ThemeData(
-  //             useMaterial3: true,
-  //           ),
-  //           home: FireTossPage(
-  //             defaultFiles: [
-  //               arguments[1],
-  //             ],
-  //           ),
-  //         ),
-  //       );
-  //       return;
-  //     }
-  //   }
-  // }
-
   if (!kIsWeb) {
-    await initializeSocket();
+    await connectToFireServer();
     initializeFireToss();
+
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      await windowManager.ensureInitialized();
+
+      WindowOptions windowOptions = const WindowOptions(
+        size: Size(1000, 600),
+        center: true,
+        titleBarStyle: TitleBarStyle.normal,
+      );
+      windowManager.waitUntilReadyToShow(windowOptions, () async {
+        await windowManager.show();
+        await windowManager.focus();
+      });
+    }
   }
 
   await Hive.initFlutter();
-
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
 
   runApp(MaterialApp(
     theme: ThemeData(
@@ -61,6 +52,29 @@ void main(List<String> arguments) async {
     ),
     builder: EasyLoading.init(),
   ));
+}
+
+Future<void> connectToFireServer() async {
+  String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
+
+  socket = io(
+    'http://$fireServerUrl',
+    OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
+        .build(),
+  );
+
+  socket.onConnect((_) {
+    socket.emit('connect server', {"address": deviceId});
+  });
+
+  socket.on("new address", (data) {
+    address = data;
+  });
+  socket.on("connect approved", (data) {
+    if (FireAccount.current != null) {
+      socket.emit("login", FireAccount.current!.uid);
+    }
+  });
 }
 
 void initializeFireToss() {
@@ -98,29 +112,6 @@ void initializeFireToss() {
             ..writeAsBytesSync(decryptFile(bytes, "awesome password").toList());
         }
       }
-    }
-  });
-}
-
-Future<void> initializeSocket() async {
-  String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
-
-  socket = io(
-    'http://$fireServerUrl',
-    OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
-        .build(),
-  );
-
-  socket.onConnect((_) {
-    socket.emit('connect server', {"address": deviceId});
-  });
-
-  socket.on("new address", (data) {
-    address = data;
-  });
-  socket.on("connect approved", (data) {
-    if (FireAccount.current != null) {
-      socket.emit("login", FireAccount.current!.uid);
     }
   });
 }
