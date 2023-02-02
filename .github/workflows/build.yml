@@ -157,7 +157,7 @@ jobs:
           
       - name: Update env.dart
         run: |
-          cp /Y resources/env.dart lib/env.dart
+          copy /Y resources/env.dart lib/env.dart
 
       - name: Download flutter package
         run: flutter pub get
