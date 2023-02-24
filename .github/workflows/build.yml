@@ -28,6 +28,10 @@ jobs:
       - name: Write Api Keys
         run: |
           echo "FIRE_API_KEY=${{ secrets.FIRE_API_KEY }}" > .env
+          
+      - name: Update env.dart
+        run: |
+          cp -f resources/env.dart lib/env.dart
 
       - name: Download flutter package
         run: flutter pub get
@@ -94,6 +98,10 @@ jobs:
       - name: Write Api Keys
         run: |
           echo "FIRE_API_KEY=${{ secrets.FIRE_API_KEY }}" > .env
+          
+      - name: Update env.dart
+        run: |
+          cp -f resources/env.dart lib/env.dart
 
       - name: Download flutter package
         run: flutter pub get
@@ -146,6 +154,10 @@ jobs:
       - name: Write Api Keys
         run: |
           echo "FIRE_API_KEY=${{ secrets.FIRE_API_KEY }}" > .env
+          
+      - name: Update env.dart
+        run: |
+          copy /Y resources/env.dart lib/env.dart
 
       - name: Download flutter package
         run: flutter pub get
@@ -198,6 +210,10 @@ jobs:
       - name: Write Api Keys
         run: |
           echo "FIRE_API_KEY=${{ secrets.FIRE_API_KEY }}" > .env
+          
+      - name: Update env.dart
+        run: |
+          cp -f resources/env.dart lib/env.dart
 
       - name: Download flutter package
         run: flutter pub get
@@ -245,6 +261,10 @@ jobs:
       - name: Write Api Keys
         run: |
           echo "FIRE_API_KEY=${{ secrets.FIRE_API_KEY }}" > .env
+          
+      - name: Update env.dart
+        run: |
+          cp -f resources/env.dart lib/env.dart
 
       - name: Download flutter package
         run: flutter pub get
