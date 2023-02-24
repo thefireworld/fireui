@@ -32,6 +32,12 @@ migrate_working_dir/
 .pub/
 /build/
 .metadata
+android/
+ios/
+linux/
+macos/
+web/
+windows/
 
 # Web related
 
