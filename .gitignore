@@ -25,19 +25,22 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
-fire_toss/.flutter-plugins
+.flutter-plugins
 .flutter-plugins-dependencies
+analysis_options.yaml
+pubspec.lock
 .packages
+.metadata
 .pub-cache/
 .pub/
-/build/
-fire_toss/.metadata
+build/
 android/
 ios/
 linux/
 macos/
 web/
 windows/
+test/
 
 # Web related
 

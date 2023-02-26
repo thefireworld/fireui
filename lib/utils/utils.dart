@@ -1,14 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:fire/main.dart';
-import 'package:fire/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-import '../env.dart';
+import '../fireui.dart';
+import 'server.dart';
 
 export 'rebuild.dart';
 export 'server.dart';
@@ -34,7 +30,7 @@ class FireAccount {
       Uri.parse('$fireApiUrl/user/$uid/update/name'),
       body: newName,
       headers: {
-        "authorization": "Bearer ${Env.fireApiKey}",
+        "authorization": "Bearer ${apiKey}",
       },
     );
     _name = newName;
@@ -53,29 +49,6 @@ class FireAccount {
     );
     response = jsonDecode(response.body);
     return FireAccount._(response["uid"], response["name"]);
-  }
-}
-
-Future<String?> getDeviceName() async {
-  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-
-  if (Platform.isAndroid) {
-    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    return androidInfo.model;
-  } else if (Platform.isIOS) {
-    IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-    return iosInfo.utsname.machine;
-  } else if (Platform.isLinux) {
-    LinuxDeviceInfo linuxInfo = await deviceInfo.linuxInfo;
-    return linuxInfo.prettyName;
-  } else if (Platform.isMacOS) {
-    MacOsDeviceInfo macOsInfo = await deviceInfo.macOsInfo;
-    return macOsInfo.computerName;
-  } else if (Platform.isWindows) {
-    WindowsDeviceInfo windowsInfo = await deviceInfo.windowsInfo;
-    return windowsInfo.computerName;
-  } else {
-    return null;
   }
 }
 
