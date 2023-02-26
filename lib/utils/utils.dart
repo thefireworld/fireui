@@ -9,7 +9,6 @@ import 'server.dart';
 export 'rebuild.dart';
 export 'server.dart';
 export 'textformatter.dart';
-export 'window.dart';
 
 String address = "err";
 
