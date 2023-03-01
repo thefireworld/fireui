@@ -42,11 +42,11 @@ Future<void> connectToFireServer() async {
 }
 
 class FireServer {
-  void onReceiveEvent(String event, EventHandler handler) {
+  static void onReceiveEvent(String event, EventHandler handler) {
     socket.on(event, (data) => handler(data));
   }
 
-  void send(String event, dynamic data) {
+  static void send(String event, dynamic data) {
     socket.emit(event, data);
   }
 }
