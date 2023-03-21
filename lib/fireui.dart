@@ -9,45 +9,62 @@ export 'titlebar.dart';
 export 'widgets/widgets.dart';
 export 'utils/utils.dart';
 
-late Socket socket;
+late Socket server;
+late Socket service;
 
 typedef dynamic EventHandler<T>(T data);
 
 String? apiKey;
 
-void initialize({String? newKey}) {
+Future<void> initialize({String? newKey}) async {
   apiKey = newKey;
+  await connectToFireServer();
 }
 
 Future<void> connectToFireServer() async {
   String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
 
-  socket = io(
+  server = io(
     'http://$fireServerUrl',
     OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
         .build(),
   );
+  service = io(
+    'http://localhost:54132',
+    OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
+        .build(),
+  );
 
-  socket.onConnect((_) {
-    socket.emit('connect server', {"address": deviceId});
+  server.onConnect((_) {
+    server.emit('connect server', {"address": deviceId});
   });
 
-  socket.on("new address", (data) {
+  server.on("new address", (data) {
     address = data;
   });
-  socket.on("connect approved", (data) {
-    if (FireAccount.current != null) {
-      socket.emit("login", FireAccount.current!.uid);
-    }
-  });
+  // server.on("connect approved", (data) {
+  //   if (FireAccount.current != null) {
+  //     server.emit("login", FireAccount.current!.uid);
+  //   }
+  // });
 }
 
 class FireServer {
   static void onReceiveEvent(String event, EventHandler handler) {
-    socket.on(event, (data) => handler(data));
+    server.on(event, (data) => handler(data));
   }
 
   static void send(String event, dynamic data) {
-    socket.emit(event, data);
+    server.emit(event, data);
+  }
+}
+
+class FireService {
+  static void onReceiveEvent(String event, EventHandler handler) {
+    service.on(event, (data) => handler(data));
+  }
+
+  static void send(String event, dynamic data) {
+    service.emit(event, data);
   }
 }
