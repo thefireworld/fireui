@@ -6,6 +6,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 import 'utils/utils.dart';
 
 export 'titlebar.dart';
+export 'widgets/widgets.dart';
 export 'utils/utils.dart';
 
 late Socket socket;
