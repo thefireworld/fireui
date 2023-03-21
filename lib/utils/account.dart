@@ -33,25 +33,23 @@ class FireAccount {
 }
 
 Future<String?> sendAuthEmail(String emailAddress) async {
+  // TODO
   service.emit("sendAuthEmail", emailAddress);
   String? authCode;
-  service.on("authEmailSent", (data) {
+  service.once("authEmailSent", (data) {
     authCode = data;
-    service.off("authEmailSent");
   });
-  while (authCode == null);
 
   return authCode;
 }
 
 Future<FireAccount?> login(String authCode, String loginCode) async {
+  // TODO
   service.emit("login", {"authCode": authCode, "loginCode": loginCode});
   String? uid;
-  service.on("logged in", (data) {
+  service.once("logged in", (data) {
     uid = data;
-    service.off("logged in");
   });
-  while (uid == null);
 
   return await FireAccount.getFromUid(uid!);
 }
