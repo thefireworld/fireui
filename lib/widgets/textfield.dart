@@ -23,7 +23,7 @@ class _FireTextFieldState extends State<FireTextField> {
       width: 250,
       height: 33 + 15,
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
+        borderRadius: borderRadius,
         border: Border.all(color: FireColors.borderColor, width: borderSize),
         color: Colors.white,
       ),

@@ -26,7 +26,7 @@ class FireButton extends StatelessWidget {
       width: max(textSize.width + 40, 130),
       height: textSize.height + 10,
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
+        borderRadius: borderRadius,
         border: Border.all(color: FireColors.borderColor, width: borderSize),
         color: Colors.white,
         image: primary
@@ -56,8 +56,8 @@ class FireButton extends StatelessWidget {
           ),
           if (disabled)
             Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
+              decoration: BoxDecoration(
+                borderRadius: borderRadius,
                 color: FireColors.disabledFilterColor,
               ),
             ),

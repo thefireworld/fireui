@@ -6,8 +6,8 @@ import 'package:socket_io_client/socket_io_client.dart';
 import 'utils/utils.dart';
 
 export 'titlebar.dart';
-export 'widgets/widgets.dart';
 export 'utils/utils.dart';
+export 'widgets/widgets.dart';
 
 late Socket server;
 late Socket service;
@@ -24,19 +24,22 @@ Future<void> initialize({String? newKey}) async {
 Future<void> connectToFireServer() async {
   String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
 
-  server = io(
-    'http://$fireServerUrl',
+  service = io(
+    'http://localhost:24085',
     OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
         .build(),
   );
-  service = io(
-    'http://localhost:54132',
+  server = io(
+    'http://$fireServerUrl',
     OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
         .build(),
   );
 
   server.onConnect((_) {
     server.emit('connect server', {"address": deviceId});
+  });
+  service.onConnect((_) {
+    log("service connected");
   });
 
   server.on("new address", (data) {
