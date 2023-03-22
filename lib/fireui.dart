@@ -1,5 +1,7 @@
 library fireui;
 
+import 'dart:developer';
+
 import 'package:platform_device_id/platform_device_id.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
@@ -11,6 +13,7 @@ export 'widgets/widgets.dart';
 
 late Socket server;
 late Socket service;
+bool serverConnected = false, serviceConnected = false;
 
 typedef dynamic EventHandler<T>(T data);
 
@@ -37,9 +40,10 @@ Future<void> connectToFireServer() async {
 
   server.onConnect((_) {
     server.emit('connect server', {"address": deviceId});
+    serverConnected = true;
   });
   service.onConnect((_) {
-    log("service connected");
+    serviceConnected = true;
   });
 
   server.on("new address", (data) {

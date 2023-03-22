@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import '../utils/utils.dart';
 
 class FireTextField extends StatefulWidget {
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+
   const FireTextField({
+    this.controller,
+    this.onChanged,
     Key? key,
   }) : super(key: key);
 
@@ -13,7 +18,6 @@ class FireTextField extends StatefulWidget {
 
 class _FireTextFieldState extends State<FireTextField> {
   bool selected = false;
-  final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -35,12 +39,13 @@ class _FireTextFieldState extends State<FireTextField> {
             child: Padding(
               padding: const EdgeInsets.only(left: 15, right: 15),
               child: TextField(
-                controller: _controller,
+                controller: widget.controller,
                 scrollController: _scrollController,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                 ),
                 style: style,
+                onChanged: widget.onChanged,
               ),
             ),
           ),

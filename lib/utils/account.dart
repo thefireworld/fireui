@@ -4,7 +4,12 @@ import 'package:http/http.dart' as http;
 
 import '../fireui.dart';
 
+typedef AuthEmailSentCallback = void Function(String authCode);
+typedef LoggedInCallback = void Function(FireAccount account);
+typedef LoginFailedCallback = void Function();
+
 class FireAccount {
+  static FireAccount? current;
   final String uid;
   String _name;
 
@@ -32,24 +37,25 @@ class FireAccount {
   }
 }
 
-Future<String?> sendAuthEmail(String emailAddress) async {
-  // TODO
+Future<void> sendAuthEmail(
+    String emailAddress, AuthEmailSentCallback onAuthEmailSent) async {
   service.emit("sendAuthEmail", emailAddress);
-  String? authCode;
-  service.once("authEmailSent", (data) {
-    authCode = data;
+  service.once("authEmailSent", (authCode) {
+    onAuthEmailSent(authCode);
   });
-
-  return authCode;
 }
 
-Future<FireAccount?> login(String authCode, String loginCode) async {
+Future<void> login(String authCode, String loginCode,
+    LoggedInCallback onLoggedIn, LoginFailedCallback onLoginFailed) async {
   // TODO
   service.emit("login", {"authCode": authCode, "loginCode": loginCode});
-  String? uid;
-  service.once("logged in", (data) {
-    uid = data;
+  service.once("logged in", (uid) {
+    if (uid != null) {
+      FireAccount.getFromUid(uid).then((account) {
+        onLoggedIn(account!);
+      });
+    } else {
+      onLoginFailed();
+    }
   });
-
-  return await FireAccount.getFromUid(uid!);
 }
