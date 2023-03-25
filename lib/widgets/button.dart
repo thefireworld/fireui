@@ -20,14 +20,13 @@ class FireButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle style = const TextStyle(fontSize: 25);
-    Size textSize = calcTextSize(text, style);
+    Size textSize = calcTextSize(text, FireStyles.smallHeaderStyle);
     return Container(
-      width: max(textSize.width + 40, 130),
+      width: max(textSize.width + 40, 100),
       height: textSize.height + 10,
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-        border: Border.all(color: FireColors.borderColor, width: borderSize),
+        borderRadius: borderRadius,
+        border: Border.all(color: FireColors.borderColor, width: .5),
         color: Colors.white,
         image: primary
             ? const DecorationImage(
@@ -49,15 +48,15 @@ class FireButton extends StatelessWidget {
               child: Center(
                 child: Text(
                   text,
-                  style: style,
+                  style: FireStyles.smallHeaderStyle,
                 ),
               ),
             ),
           ),
           if (disabled)
             Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
+              decoration: BoxDecoration(
+                borderRadius: borderRadius,
                 color: FireColors.disabledFilterColor,
               ),
             ),
