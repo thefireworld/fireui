@@ -35,6 +35,31 @@ class FireAccount {
     response = jsonDecode(response.body);
     return FireAccount._(response["uid"], response["name"]);
   }
+
+  static Future<bool> isLoggedIn() async {
+    FireService.send("getCurrentAccount", null);
+    bool? isLoggedIn;
+    service.once("currentAccount", (data) async {
+      if (data["status"] == "loggedout") {
+        isLoggedIn = false;
+      } else if (data["status"] == "loggedin") {
+        FireAccount.current = await FireAccount.getFromUid(data["uid"]);
+      }
+    });
+    await Future.doWhile(() {
+      if (isLoggedIn != null) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+    return isLoggedIn!;
+  }
+
+  static Future<void> logout() async {
+    current = null;
+    FireService.send("logout", null);
+  }
 }
 
 Future<void> sendAuthEmail(

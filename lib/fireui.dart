@@ -2,7 +2,6 @@ library fireui;
 
 import 'dart:developer';
 
-import 'package:platform_device_id/platform_device_id.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 import 'utils/utils.dart';
@@ -18,15 +17,16 @@ bool serverConnected = false, serviceConnected = false;
 typedef dynamic EventHandler<T>(T data);
 
 String? apiKey;
+RebuildController? _rebuildController;
 
-Future<void> initialize({String? newKey}) async {
+void initialize({String? newKey, RebuildController? rebuildController}) {
   apiKey = newKey;
-  await connectToFireServer();
+  _rebuildController = rebuildController;
+
+  connectToFireServer();
 }
 
-Future<void> connectToFireServer() async {
-  String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
-
+void connectToFireServer() {
   service = io(
     'http://localhost:24085',
     OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
@@ -39,12 +39,18 @@ Future<void> connectToFireServer() async {
   );
 
   server.onConnect((_) {
-    server.emit('connect server', {"address": deviceId});
+    log("server Connected");
+    // String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
+    server.emit('connect server', {"address": "deviceId"});
     serverConnected = true;
+    _rebuildController?.rebuild();
   });
   service.onConnect((_) {
+    log("service Connected");
     serviceConnected = true;
+    _rebuildController?.rebuild();
   });
+  log("aa");
 
   server.on("new address", (data) {
     address = data;
