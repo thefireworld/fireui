@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -38,6 +39,7 @@ class FireAccount {
 
   static Future<bool> isLoggedIn() async {
     FireService.send("getCurrentAccount", null);
+    Completer currentAccountReceived = Completer();
     bool? isLoggedIn;
     service.once("currentAccount", (data) async {
       if (data["status"] == "loggedout") {
@@ -45,14 +47,9 @@ class FireAccount {
       } else if (data["status"] == "loggedin") {
         FireAccount.current = await FireAccount.getFromUid(data["uid"]);
       }
+      currentAccountReceived.complete();
     });
-    await Future.doWhile(() {
-      if (isLoggedIn != null) {
-        return false;
-      } else {
-        return true;
-      }
-    });
+    await currentAccountReceived.future;
     return isLoggedIn!;
   }
 

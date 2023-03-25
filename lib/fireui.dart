@@ -1,11 +1,13 @@
 library fireui;
 
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:socket_io_client/socket_io_client.dart';
 
 import 'utils/utils.dart';
 
+export 'pages/initialize.dart';
 export 'titlebar.dart';
 export 'utils/utils.dart';
 export 'widgets/widgets.dart';
@@ -19,24 +21,22 @@ typedef dynamic EventHandler<T>(T data);
 String? apiKey;
 RebuildController? _rebuildController;
 
-void initialize({String? newKey, RebuildController? rebuildController}) {
+Future<void> initialize(
+    {String? newKey, RebuildController? rebuildController}) async {
   apiKey = newKey;
   _rebuildController = rebuildController;
 
-  connectToFireServer();
+  await connectToFireServer();
 }
 
-void connectToFireServer() {
-  service = io(
-    'http://localhost:24085',
-    OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
-        .build(),
-  );
+Future<void> connectToFireServer() async {
   server = io(
     'http://$fireServerUrl',
     OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
         .build(),
   );
+
+  Completer<String> serverConnecting = Completer();
 
   server.onConnect((_) {
     log("server Connected");
@@ -44,22 +44,27 @@ void connectToFireServer() {
     server.emit('connect server', {"address": "deviceId"});
     serverConnected = true;
     _rebuildController?.rebuild();
+    serverConnecting.complete(server.id);
   });
+  await serverConnecting.future;
+
+  Completer<String> serviceConnecting = Completer();
+  service = io(
+    'http://localhost:24085',
+    OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
+        .build(),
+  );
   service.onConnect((_) {
     log("service Connected");
     serviceConnected = true;
     _rebuildController?.rebuild();
+    serviceConnecting.complete(service.id);
   });
-  log("aa");
+  await serviceConnecting.future;
 
   server.on("new address", (data) {
     address = data;
   });
-  // server.on("connect approved", (data) {
-  //   if (FireAccount.current != null) {
-  //     server.emit("login", FireAccount.current!.uid);
-  //   }
-  // });
 }
 
 class FireServer {
