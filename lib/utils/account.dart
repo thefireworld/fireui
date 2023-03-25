@@ -45,6 +45,7 @@ class FireAccount {
       if (data["status"] == "loggedout") {
         isLoggedIn = false;
       } else if (data["status"] == "loggedin") {
+        isLoggedIn = true;
         FireAccount.current = await FireAccount.getFromUid(data["uid"]);
       }
       currentAccountReceived.complete();
