@@ -15,6 +15,8 @@ class FireInitializePage extends StatefulWidget {
 }
 
 class _FireInitializePageState extends State<FireInitializePage> {
+  String loadingText = "Loading...";
+
   @override
   void initState() {
     super.initState();
@@ -22,13 +24,21 @@ class _FireInitializePageState extends State<FireInitializePage> {
     initialize(
       newKey: widget.fireApiKey,
       rebuildController: widget.rebuildController,
-    ).then((value) {
-      if (widget.next == null) return;
+    );
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => widget.next!),
-      );
+    setState(() => loadingText = "Fire Server에 연결하는중...");
+    connectToFireServer(context: context).then((value) {
+      setState(() => loadingText = "Fire Service에 연결하는중...");
+
+      connectToFireService(context: context).then((value) {
+        setState(() => loadingText = "Fire가 준비되었습니다!");
+
+        if (widget.next == null) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => widget.next!),
+        );
+      });
     });
   }
 
@@ -41,7 +51,7 @@ class _FireInitializePageState extends State<FireInitializePage> {
         const SizedBox(height: 50),
         CircularProgressIndicator(),
         const SizedBox(height: 10),
-        Text("서버에 연결하는중..", style: FireStyles.smallHeaderStyle),
+        Text(loadingText, style: FireStyles.smallHeaderStyle),
       ],
     );
   }

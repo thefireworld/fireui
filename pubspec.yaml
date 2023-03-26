@@ -9,10 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  window_manager: ^0.3.0
+  window_manager: ^0.3.1
   http: ^0.13.5
   platform_device_id: ^1.0.1
   socket_io_client: ^1.0.0
+  animated_snack_bar: ^0.3.0
 
 dev_dependencies:
   flutter_test:
