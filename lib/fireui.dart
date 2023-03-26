@@ -29,6 +29,10 @@ Future<void> initialize(
   await connectToFireServer();
 }
 
+void rebuild() {
+  _rebuildController?.rebuild();
+}
+
 Future<void> connectToFireServer() async {
   server = io(
     'http://$fireServerUrl',
