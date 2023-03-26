@@ -5,10 +5,6 @@ import 'package:http/http.dart' as http;
 
 import '../fireui.dart';
 
-typedef AuthEmailSentCallback = void Function(String authCode);
-typedef LoggedInCallback = void Function(FireAccount account);
-typedef LoginFailedCallback = void Function();
-
 class FireAccount {
   static FireAccount? current;
   final String uid;
@@ -54,31 +50,35 @@ class FireAccount {
     return isLoggedIn!;
   }
 
-  static Future<void> logout() async {
+  static void logout() {
     current = null;
     FireService.send("logout", null);
   }
 }
 
-Future<void> sendAuthEmail(
-    String emailAddress, AuthEmailSentCallback onAuthEmailSent) async {
+Future<String> sendAuthEmail(String emailAddress) async {
   service.emit("sendAuthEmail", emailAddress);
+
+  Completer<String> authEmailSentReceived = Completer();
   service.once("authEmailSent", (authCode) {
-    onAuthEmailSent(authCode);
+    authEmailSentReceived.complete(authCode);
   });
+  return await authEmailSentReceived.future;
 }
 
-Future<void> login(String authCode, String loginCode,
-    LoggedInCallback onLoggedIn, LoginFailedCallback onLoginFailed) async {
+Future<FireAccount?> login(String authCode, String loginCode) async {
   // TODO
   service.emit("login", {"authCode": authCode, "loginCode": loginCode});
+
+  Completer<FireAccount?> loggedInStatusReceived = Completer();
   service.once("logged in", (uid) {
     if (uid != null) {
       FireAccount.getFromUid(uid).then((account) {
-        onLoggedIn(account!);
+        loggedInStatusReceived.complete(account);
       });
     } else {
-      onLoginFailed();
+      loggedInStatusReceived.complete(null);
     }
   });
+  return await loggedInStatusReceived.future;
 }
