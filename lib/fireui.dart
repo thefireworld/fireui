@@ -44,11 +44,11 @@ Future<void> connectToFireServer({BuildContext? context}) async {
 
   server.onConnect((_) {
     log("server Connected");
+    serverConnecting.complete(server.id);
     // String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
     server.emit('connect server', {"address": "deviceId"});
     serverConnected = true;
     _rebuildController?.rebuild();
-    serverConnecting.complete(server.id);
   });
   final snackBar = AnimatedSnackBar.material(
     "Fire Server에 연결할 수 없습니다.",
@@ -56,17 +56,22 @@ Future<void> connectToFireServer({BuildContext? context}) async {
     desktopSnackBarPosition: DesktopSnackBarPosition.bottomCenter,
     duration: Duration(hours: 10),
   );
+  bool snackBarShown = false;
   await serverConnecting.future.timeout(
     Duration(seconds: 5),
     onTimeout: () async {
       if (context != null) {
         snackBar.show(context);
+        snackBarShown = true;
       }
       return await serverConnecting.future;
     },
   );
 
-  snackBar.remove();
+  if (snackBarShown) {
+    snackBar.remove();
+  }
+
   server.on("new address", (data) {
     address = data;
   });
