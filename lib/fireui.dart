@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:dart_app_data/dart_app_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -18,6 +19,7 @@ export 'widgets/widgets.dart';
 late Socket server;
 late Socket service;
 bool serverConnected = false, serviceConnected = false;
+final dotFireDirectory = AppData.findOrCreate('.fire');
 
 typedef dynamic EventHandler<T>(T data);
 
