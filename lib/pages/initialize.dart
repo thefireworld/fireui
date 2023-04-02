@@ -4,11 +4,17 @@ import 'package:flutter/material.dart';
 class FireInitializePage extends StatefulWidget {
   final String fireApiKey;
   final RebuildController? rebuildController;
+  final bool dontConnectToFireServer, dontConnectToFireService;
   final Widget? next;
 
-  const FireInitializePage(
-      {required this.fireApiKey, this.rebuildController, this.next, Key? key})
-      : super(key: key);
+  const FireInitializePage({
+    required this.fireApiKey,
+    this.rebuildController,
+    this.dontConnectToFireServer = false,
+    this.dontConnectToFireService = false,
+    this.next,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<FireInitializePage> createState() => _FireInitializePageState();
@@ -26,20 +32,25 @@ class _FireInitializePageState extends State<FireInitializePage> {
       rebuildController: widget.rebuildController,
     );
 
-    setState(() => loadingText = "Fire Server에 연결하는중...");
-    connectToFireServer(context: context).then((value) {
-      setState(() => loadingText = "Fire Service에 연결하는중...");
+    () async {
+      if (!widget.dontConnectToFireServer) {
+        setState(() => loadingText = "Fire Server에 연결하는중...");
+        await connectToFireServer(context: context);
+      }
 
-      connectToFireService(context: context).then((value) {
-        setState(() => loadingText = "Fire가 준비되었습니다!");
+      if (!widget.dontConnectToFireService) {
+        setState(() => loadingText = "Fire Service에 연결하는중...");
+        await connectToFireService(context: context);
+      }
 
-        if (widget.next == null) return;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => widget.next!),
-        );
-      });
-    });
+      setState(() => loadingText = "Fire가 준비되었습니다!");
+
+      if (widget.next == null) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => widget.next!),
+      );
+    }();
   }
 
   @override
