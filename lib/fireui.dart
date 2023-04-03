@@ -2,6 +2,7 @@ library fireui;
 
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:dart_app_data/dart_app_data.dart';
@@ -94,11 +95,11 @@ Future<void> connectToFireService({BuildContext? context}) async {
   });
 
   await serviceConnecting.future.timeout(
-    Duration(seconds: 5),
+    Duration(seconds: 3),
     onTimeout: () async {
-      if (context != null) {
-        // TODO download and run fire service
-      }
+      String serviceProgram =
+          "${dotFireDirectory.directory.path}/service/start.bat";
+      Process.start(serviceProgram, []);
       return await serviceConnecting.future;
     },
   );
