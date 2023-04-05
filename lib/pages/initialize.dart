@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fireui/fireui.dart';
 import 'package:flutter/material.dart';
 
@@ -5,10 +7,12 @@ class FireInitializePage extends StatefulWidget {
   final String fireApiKey;
   final RebuildController? rebuildController;
   final bool dontConnectToFireServer, dontConnectToFireService;
+  final InitializeStatus initializeStatus;
   final Widget? next;
 
   const FireInitializePage({
     required this.fireApiKey,
+    required this.initializeStatus,
     this.rebuildController,
     this.dontConnectToFireServer = false,
     this.dontConnectToFireService = false,
@@ -38,6 +42,60 @@ class _FireInitializePageState extends State<FireInitializePage> {
         await connectToFireServer(context: context);
       }
 
+      if (widget.initializeStatus == InitializeStatus.differentVersion) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              title: Column(
+                children: const [
+                  Text("Fire가 오래되었습니다."),
+                ],
+              ),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Fire를 업데이트해주세요.",
+                    style: FireStyles.smallHeaderStyle,
+                  ),
+                  const Text(
+                    "업데이트를 누르면 업데이트됩니다.",
+                    style: FireStyles.smallHeaderStyle,
+                  ),
+                  Text(
+                    "필요한 FireService 버전: ${FireUI.requiredServiceVersion}",
+                    style: FireStyles.smallHeaderStyle,
+                  ),
+                  Text(
+                    "현재 FireService 버전: ${FireUI.currentServiceVersion}",
+                    style: FireStyles.smallHeaderStyle,
+                  ),
+                ],
+              ),
+              actions: [
+                FireButton(
+                  onPressed: () {
+                    // TODO Open Installer
+                    exit(0);
+                  },
+                  text: "업데이트",
+                ),
+                FireButton(
+                  onPressed: () {
+                    exit(0);
+                  },
+                  text: "종료",
+                ),
+              ],
+            );
+          },
+        );
+      }
       if (!widget.dontConnectToFireService) {
         setState(() => loadingText = "Fire Service에 연결하는중...");
         await connectToFireService(context: context);

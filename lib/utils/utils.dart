@@ -7,6 +7,7 @@ export 'server.dart';
 export 'textformatter.dart';
 export 'theme.dart';
 export 'account.dart';
+export 'version.dart';
 
 String address = "err";
 

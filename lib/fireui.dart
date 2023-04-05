@@ -9,6 +9,7 @@ import 'package:dart_app_data/dart_app_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:windows_single_instance/windows_single_instance.dart';
 
 import 'utils/utils.dart';
 
@@ -26,6 +27,38 @@ typedef dynamic EventHandler<T>(T data);
 
 String? apiKey;
 RebuildController? _rebuildController;
+
+enum InitializeStatus {
+  success,
+  differentVersion,
+}
+
+class FireUI {
+  static Version? requiredServiceVersion;
+  static Version? currentServiceVersion;
+
+  static Future<InitializeStatus> initialize(List<String> arguments,
+      {required String identifier,
+      required Version requiredServiceVersion}) async {
+    FireUI.requiredServiceVersion = requiredServiceVersion;
+
+    await WindowsSingleInstance.ensureSingleInstance(arguments, identifier);
+
+    ProcessResult result = await Process.run(
+      "${dotFireDirectory.directory.path}/service/fireservice.exe",
+      ["--version"],
+    );
+    Version currentServiceVersion =
+        Version.fromString(result.stdout.toString());
+    FireUI.currentServiceVersion = currentServiceVersion;
+    if (currentServiceVersion != requiredServiceVersion) {
+      log("Programs and services have different versions.");
+      return InitializeStatus.differentVersion;
+    }
+
+    return InitializeStatus.success;
+  }
+}
 
 void initialize({String? newKey, RebuildController? rebuildController}) {
   apiKey = newKey;
@@ -97,9 +130,7 @@ Future<void> connectToFireService({BuildContext? context}) async {
   await serviceConnecting.future.timeout(
     Duration(seconds: 3),
     onTimeout: () async {
-      String serviceProgram =
-          "${dotFireDirectory.directory.path}/service/start.bat";
-      Process.start(serviceProgram, []);
+      Process.start("${dotFireDirectory.directory.path}/service/start.bat", []);
       return await serviceConnecting.future;
     },
   );

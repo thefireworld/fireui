@@ -16,6 +16,7 @@ dependencies:
   animated_snack_bar: ^0.3.0
   dart_app_data:
     git: https://github.com/SIHU08/dart_app_data
+  windows_single_instance: ^0.1.5
 
 dev_dependencies:
   flutter_test:
