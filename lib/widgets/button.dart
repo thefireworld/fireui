@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:fireui/widgets/bouncing.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/utils.dart';
@@ -18,8 +19,23 @@ class FireButton extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
+  void _onTap() {
+    if (disabled) return;
+
+    onPressed();
+  }
+
   @override
   Widget build(BuildContext context) {
+    return BouncingWidget(
+      child: GestureDetector(
+        onTap: _onTap,
+        child: _button(),
+      ),
+    );
+  }
+
+  Widget _button() {
     Size textSize = calcTextSize(text, FireStyles.smallHeaderStyle);
     return Container(
       width: max(textSize.width + 40, 100),
@@ -37,20 +53,10 @@ class FireButton extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-              onTap: () {
-                if (disabled) return;
-
-                onPressed();
-              },
-              child: Center(
-                child: Text(
-                  text,
-                  style: FireStyles.smallHeaderStyle,
-                ),
-              ),
+          Center(
+            child: Text(
+              text,
+              style: FireStyles.smallHeaderStyle,
             ),
           ),
           if (disabled)
