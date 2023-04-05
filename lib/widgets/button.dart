@@ -28,10 +28,8 @@ class FireButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BouncingWidget(
-      child: GestureDetector(
-        onTap: _onTap,
-        child: _button(),
-      ),
+      onTap: _onTap,
+      child: _button(),
     );
   }
 

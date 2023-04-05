@@ -34,13 +34,20 @@ class _FireListViewState extends State<FireListView> {
           itemBuilder: (context, i) {
             AbstractListViewItem item = widget.items[i];
 
-            Widget child = item.build(context, index == i, () {
-              setState(() {
-                index = i;
-                if (widget.callback != null) widget.callback!(i);
-              });
-            });
-            return item.isPressable ? BouncingWidget(child: child) : child;
+            Widget child = item.build(context, index == i);
+            return item.isPressable
+                ? BouncingWidget(
+                    child: child,
+                    onTap: () {
+                      item.onTap?.call(() {
+                        setState(() {
+                          index = i;
+                          if (widget.callback != null) widget.callback!(i);
+                        });
+                      });
+                    },
+                  )
+                : child;
           },
         ),
       ),

@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 class BouncingWidget extends StatefulWidget {
   final Widget? child;
+  final VoidCallback? onTap;
 
-  const BouncingWidget({this.child, Key? key}) : super(key: key);
+  const BouncingWidget({this.child, this.onTap, Key? key}) : super(key: key);
 
   @override
   State<BouncingWidget> createState() => _BouncingWidgetState();
@@ -22,7 +25,7 @@ class _BouncingWidgetState extends State<BouncingWidget>
         milliseconds: 100,
       ),
       lowerBound: 0,
-      upperBound: .1,
+      upperBound: .05,
     )..addListener(() {
         setState(() {});
       });
@@ -36,14 +39,17 @@ class _BouncingWidgetState extends State<BouncingWidget>
   }
 
   void _onTapDown(TapDownDetails details) {
+    log(details.toString());
     _controller.forward();
   }
 
   void _onTapUp(TapUpDetails details) {
+    log(details.toString());
     _controller.reverse();
   }
 
   void _onDragEnd(DragEndDetails details) {
+    log(details.toString());
     _controller.reverse();
   }
 
@@ -56,11 +62,13 @@ class _BouncingWidgetState extends State<BouncingWidget>
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: widget.onTap,
           onTapDown: _onTapDown,
           onTapUp: _onTapUp,
           onHorizontalDragEnd: _onDragEnd,
           onVerticalDragEnd: _onDragEnd,
-          child: widget.child,
+          child: AbsorbPointer(child: widget.child),
         ),
       ),
     );

@@ -2,13 +2,15 @@ import 'package:fireui/fireui.dart';
 import 'package:flutter/material.dart';
 
 typedef SelectedItemChangedCallback = void Function(int index);
+typedef OnTapCallback = void Function(VoidCallback onSelected);
 
 abstract class AbstractListViewItem {
   bool isPressable = false;
+  OnTapCallback? onTap;
 
-  AbstractListViewItem(this.isPressable);
+  AbstractListViewItem(this.isPressable, this.onTap);
 
-  Widget build(BuildContext context, bool isSelected, VoidCallback onSelected);
+  Widget build(BuildContext context, bool isSelected);
 }
 
 class ListViewTitle extends AbstractListViewItem {
@@ -16,10 +18,11 @@ class ListViewTitle extends AbstractListViewItem {
   String title;
   Widget? trailing;
 
-  ListViewTitle({this.icon, required this.title, this.trailing}) : super(false);
+  ListViewTitle({this.icon, required this.title, this.trailing})
+      : super(false, (_) {});
 
   @override
-  Widget build(BuildContext context, bool isSelected, VoidCallback onSelected) {
+  Widget build(BuildContext context, bool isSelected) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10, right: 10),
       child: Column(
@@ -59,10 +62,18 @@ class ListViewItem extends AbstractListViewItem {
     this.customCallback,
     this.isSelectable = true,
     bool isPressable = false,
-  }) : super(isPressable);
+  }) : super(isPressable, (VoidCallback onSelected) {
+          if (customCallback == null) {
+            if (isSelectable) {
+              onSelected();
+            }
+          } else {
+            customCallback();
+          }
+        });
 
   @override
-  Widget build(BuildContext context, bool isSelected, VoidCallback onSelected) {
+  Widget build(BuildContext context, bool isSelected) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 5, right: 10),
       child: Stack(
@@ -89,15 +100,6 @@ class ListViewItem extends AbstractListViewItem {
             enabled: isSelectable,
             hoverColor: !isSelected ? FireColors.hoverColor : Colors.white,
             splashColor: Colors.transparent,
-            onTap: () {
-              if (customCallback == null) {
-                if (isSelectable) {
-                  onSelected();
-                }
-              } else {
-                customCallback!();
-              }
-            },
           )
         ],
       ),
@@ -115,10 +117,10 @@ class ListViewOption extends AbstractListViewItem {
     required this.title,
     this.trailing,
     bool isPressable = false,
-  }) : super(isPressable);
+  }) : super(isPressable, (_) {});
 
   @override
-  Widget build(BuildContext context, bool isSelected, VoidCallback onSelected) {
+  Widget build(BuildContext context, bool isSelected) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 5, right: 10),
       child: ListTile(
@@ -135,10 +137,10 @@ class ListViewOption extends AbstractListViewItem {
 }
 
 class ListViewSpacer extends AbstractListViewItem {
-  ListViewSpacer() : super(false);
+  ListViewSpacer() : super(false, (_) {});
 
   @override
-  Widget build(BuildContext context, bool isSelected, VoidCallback onSelected) {
+  Widget build(BuildContext context, bool isSelected) {
     return Padding(
       padding: const EdgeInsets.only(left: 0, right: 10, top: 10, bottom: 10),
       child: Container(
