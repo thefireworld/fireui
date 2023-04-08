@@ -39,17 +39,14 @@ class _BouncingWidgetState extends State<BouncingWidget>
   }
 
   void _onTapDown(TapDownDetails details) {
-    log(details.toString());
     _controller.forward();
   }
 
   void _onTapUp(TapUpDetails details) {
-    log(details.toString());
     _controller.reverse();
   }
 
   void _onDragEnd(DragEndDetails details) {
-    log(details.toString());
     _controller.reverse();
   }
 
