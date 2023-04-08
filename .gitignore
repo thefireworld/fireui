@@ -53,3 +53,5 @@ app.*.map.json
 # exclude the API key from version control
 fire_toss/.env
 env.g.dart
+
+.vscode/
