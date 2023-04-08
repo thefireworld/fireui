@@ -5,10 +5,12 @@ import '../utils/utils.dart';
 class FireTextField extends StatefulWidget {
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
+  final String? labelText;
 
   const FireTextField({
     this.controller,
     this.onChanged,
+    this.labelText,
     Key? key,
   }) : super(key: key);
 
@@ -41,8 +43,10 @@ class _FireTextFieldState extends State<FireTextField> {
               child: TextField(
                 controller: widget.controller,
                 scrollController: _scrollController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: InputBorder.none,
+                  hintText: widget.labelText,
+                  hintStyle: FireStyles.hintStyle,
                 ),
                 style: style,
                 onChanged: widget.onChanged,
