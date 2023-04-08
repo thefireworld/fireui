@@ -3,19 +3,20 @@ description: Fire UI
 version: 0.0.1
 
 environment:
-  sdk: '>=2.19.2 <3.0.0'
+  sdk: ">=2.19.2 <3.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
-  window_manager: ^0.3.1
-  http: ^0.13.5
-  platform_device_id: ^1.0.1
-  socket_io_client: ^1.0.0
   animated_snack_bar: ^0.3.0
   dart_app_data:
     git: https://github.com/SIHU08/dart_app_data
+  flutter:
+    sdk: flutter
+  http: ^0.13.5
+  pinput: ^2.2.31
+  platform_device_id: ^1.0.1
+  socket_io_client: ^1.0.0
+  window_manager: ^0.3.1
   windows_single_instance: ^0.1.5
 
 dev_dependencies:
