@@ -23,6 +23,15 @@ class FireStyles {
     fontSize: 20,
     color: Colors.black,
   );
+  static const TextStyle hintStyle = const TextStyle(
+    fontFamily: "Pretendard",
+    fontSize: 20,
+  );
+  static const TextStyle contentStyle = const TextStyle(
+    fontFamily: "Pretendard",
+    fontSize: 15,
+    color: Colors.black,
+  );
 }
 
 final borderRadius = const BorderRadius.all(Radius.circular(20));
