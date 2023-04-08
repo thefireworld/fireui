@@ -38,22 +38,23 @@ class FireUI {
   static Version? currentServiceVersion;
 
   static Future<InitializeStatus> initialize(List<String> arguments,
-      {required String identifier,
-      required Version requiredServiceVersion}) async {
+      {required String identifier, Version? requiredServiceVersion}) async {
     FireUI.requiredServiceVersion = requiredServiceVersion;
 
     await WindowsSingleInstance.ensureSingleInstance(arguments, identifier);
 
-    ProcessResult result = await Process.run(
-      "${dotFireDirectory.directory.path}/service/fireservice.exe",
-      ["--version"],
-    );
-    Version currentServiceVersion =
-        Version.fromString(result.stdout.toString());
-    FireUI.currentServiceVersion = currentServiceVersion;
-    if (currentServiceVersion != requiredServiceVersion) {
-      log("Programs and services have different versions.");
-      return InitializeStatus.differentVersion;
+    if (requiredServiceVersion != null) {
+      ProcessResult result = await Process.run(
+        "${dotFireDirectory.directory.path}/service/fireservice.exe",
+        ["--version"],
+      );
+      Version currentServiceVersion =
+          Version.fromString(result.stdout.toString());
+      FireUI.currentServiceVersion = currentServiceVersion;
+      if (currentServiceVersion != requiredServiceVersion) {
+        log("Programs and services have different versions.");
+        return InitializeStatus.differentVersion;
+      }
     }
 
     return InitializeStatus.success;
