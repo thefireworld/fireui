@@ -56,14 +56,18 @@ class FireAccount {
   }
 }
 
-Future<String> sendAuthEmail(String emailAddress) async {
-  service.emit("sendAuthEmail", emailAddress);
+enum AuthMessageProvider { email, sms }
 
-  Completer<String> authEmailSentReceived = Completer();
-  service.once("authEmailSent", (authCode) {
-    authEmailSentReceived.complete(authCode);
+Future<String> sendAuthMessage(
+    String address, AuthMessageProvider messageProvider) async {
+  service.emit("sendAuthMessage",
+      {"address": address, "provider": messageProvider.name});
+
+  Completer<String> authMessageSentReceived = Completer();
+  service.once("authMessageSent", (authCode) {
+    authMessageSentReceived.complete(authCode);
   });
-  return await authEmailSentReceived.future;
+  return await authMessageSentReceived.future;
 }
 
 Future<FireAccount?> login(String authCode, String loginCode) async {

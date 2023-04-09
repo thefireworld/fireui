@@ -15,7 +15,7 @@ dependencies:
   http: ^0.13.5
   pinput: ^2.2.31
   platform_device_id: ^1.0.1
-  socket_io_client: ^1.0.0
+  socket_io_client: ^1.0.2
   window_manager: ^0.3.1
   windows_single_instance: ^0.1.5
 
