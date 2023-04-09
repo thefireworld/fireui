@@ -79,13 +79,21 @@ Future<void> connectToFireServer({BuildContext? context}) async {
 
   Completer<String> serverConnecting = Completer();
 
-  server.onConnect((_) {
+  server.onConnect((_) async {
     log("server Connected");
     serverConnecting.complete(server.id);
     // String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
     server.emit('connect server', {"address": "deviceId"});
     serverConnected = true;
     _rebuildController?.rebuild();
+
+    if (serviceConnected) {
+      await FireAccount.isLoggedIn();
+      log(FireAccount.current.toString());
+      if (FireAccount.current != null) {
+        server.emit("login", FireAccount.current!.uid);
+      }
+    }
   });
   final snackBar = AnimatedSnackBar.material(
     "Fire Server에 연결할 수 없습니다.",

@@ -71,7 +71,6 @@ Future<String> sendAuthMessage(
 }
 
 Future<FireAccount?> login(String authCode, String loginCode) async {
-  // TODO
   service.emit("login", {"authCode": authCode, "loginCode": loginCode});
 
   Completer<FireAccount?> loggedInStatusReceived = Completer();
@@ -79,6 +78,7 @@ Future<FireAccount?> login(String authCode, String loginCode) async {
     if (uid != null) {
       FireAccount.getFromUid(uid).then((account) {
         loggedInStatusReceived.complete(account);
+        server.emit("login", account!.uid);
       });
     } else {
       loggedInStatusReceived.complete(null);
