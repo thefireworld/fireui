@@ -29,7 +29,7 @@ class FireStyles {
   );
   static const TextStyle contentStyle = const TextStyle(
     fontFamily: "Pretendard",
-    fontSize: 15,
+    fontSize: 17,
     color: Colors.black,
   );
 }
