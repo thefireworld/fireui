@@ -142,6 +142,10 @@ class FireServer {
     server.on(event, (data) => handler(data));
   }
 
+  static void onReceiveEventOnce(String event, EventHandler handler) {
+    server.once(event, (data) => handler(data));
+  }
+
   static void send(String event, dynamic data) {
     server.emit(event, data);
   }
