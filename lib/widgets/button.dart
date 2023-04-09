@@ -10,12 +10,14 @@ class FireButton extends StatelessWidget {
   final bool disabled;
   final bool primary;
   final String text;
+  final bool isIconButton;
 
   const FireButton({
     required this.onPressed,
     this.disabled = false,
     this.primary = false,
     this.text = "Button",
+    this.isIconButton = false,
     Key? key,
   }) : super(key: key);
 
@@ -36,7 +38,7 @@ class FireButton extends StatelessWidget {
   Widget _button() {
     Size textSize = calcTextSize(text, FireStyles.smallHeaderStyle);
     return Container(
-      width: max(textSize.width + 40, 100),
+      width: isIconButton ? textSize.width + 30 : max(textSize.width + 40, 100),
       height: textSize.height + 10,
       decoration: BoxDecoration(
         borderRadius: borderRadius,
