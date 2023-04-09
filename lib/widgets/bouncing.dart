@@ -34,8 +34,8 @@ class _BouncingWidgetState extends State<BouncingWidget>
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   void _onTapDown(TapDownDetails details) {
