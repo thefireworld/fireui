@@ -63,12 +63,11 @@ class ListViewItem extends AbstractListViewItem {
     this.isSelectable = true,
     bool isPressable = false,
   }) : super(isPressable, (VoidCallback onSelected) {
-          if (customCallback == null) {
-            if (isSelectable) {
-              onSelected();
-            }
-          } else {
+          if (customCallback != null) {
             customCallback();
+          }
+          if (isSelectable) {
+            onSelected();
           }
         });
 
@@ -142,14 +141,14 @@ class ListViewSpacer extends AbstractListViewItem {
   @override
   Widget build(BuildContext context, bool isSelected) {
     return Padding(
-      padding: const EdgeInsets.only(left: 0, right: 10, top: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 0, right: 10, bottom: 10),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: borderRadius,
           color: FireColors.borderColor,
         ),
         width: MediaQuery.of(context).size.width - 20,
-        height: 3,
+        height: 2,
       ),
     );
   }
