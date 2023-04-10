@@ -78,7 +78,7 @@ Future<FireAccount?> login(String authCode, String loginCode) async {
     if (uid != null) {
       FireAccount.getFromUid(uid).then((account) {
         loggedInStatusReceived.complete(account);
-        server.emit("login", account!.uid);
+        FireServer.send("login", account!.uid);
       });
     } else {
       loggedInStatusReceived.complete(null);

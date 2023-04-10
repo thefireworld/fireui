@@ -18,9 +18,8 @@ export 'titlebar.dart';
 export 'utils/utils.dart';
 export 'widgets/widgets.dart';
 
-late Socket server;
 late Socket service;
-bool serverConnected = false, serviceConnected = false;
+bool serviceConnected = false;
 final dotFireDirectory = AppData.findOrCreate('.fire');
 
 typedef dynamic EventHandler<T>(T data);
@@ -70,57 +69,57 @@ void rebuild() {
   _rebuildController?.rebuild();
 }
 
-Future<void> connectToFireServer({BuildContext? context}) async {
-  server = io(
-    'http://$fireServerUrl',
-    OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
-        .build(),
-  );
+// Future<void> connectToFireServer({BuildContext? context}) async {
+//   server = io(
+//     'http://$fireServerUrl',
+//     OptionBuilder().setTransports(['websocket']) // for Flutter or Dart VM
+//         .build(),
+//   );
 
-  Completer<String> serverConnecting = Completer();
+//   Completer<String> serverConnecting = Completer();
 
-  server.onConnect((_) async {
-    log("server Connected");
-    serverConnecting.complete(server.id);
-    // String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
-    server.emit('connect server', {"address": "deviceId"});
-    serverConnected = true;
-    _rebuildController?.rebuild();
+//   server.onConnect((_) async {
+//     log("server Connected");
+//     serverConnecting.complete(server.id);
+//     // String deviceId = (await PlatformDeviceId.getDeviceId)!.trim();
+//     server.emit('connect server', {"address": "deviceId"});
+//     serverConnected = true;
+//     _rebuildController?.rebuild();
 
-    if (serviceConnected) {
-      await FireAccount.isLoggedIn();
-      log(FireAccount.current.toString());
-      if (FireAccount.current != null) {
-        server.emit("login", FireAccount.current!.uid);
-      }
-    }
-  });
-  final snackBar = AnimatedSnackBar.material(
-    "Fire Server에 연결할 수 없습니다.",
-    type: AnimatedSnackBarType.warning,
-    desktopSnackBarPosition: DesktopSnackBarPosition.bottomCenter,
-    duration: Duration(hours: 10),
-  );
-  bool snackBarShown = false;
-  await serverConnecting.future.timeout(
-    Duration(seconds: 5),
-    onTimeout: () async {
-      if (context != null) {
-        snackBar.show(context);
-        snackBarShown = true;
-      }
-      return await serverConnecting.future;
-    },
-  );
+//     if (serviceConnected) {
+//       await FireAccount.isLoggedIn();
+//       log(FireAccount.current.toString());
+//       if (FireAccount.current != null) {
+//         FireServer.send("login", FireAccount.current!.uid);
+//       }
+//     }
+//   });
+//   final snackBar = AnimatedSnackBar.material(
+//     "Fire Server에 연결할 수 없습니다.",
+//     type: AnimatedSnackBarType.warning,
+//     desktopSnackBarPosition: DesktopSnackBarPosition.bottomCenter,
+//     duration: Duration(hours: 10),
+//   );
+//   bool snackBarShown = false;
+//   await serverConnecting.future.timeout(
+//     Duration(seconds: 5),
+//     onTimeout: () async {
+//       if (context != null) {
+//         snackBar.show(context);
+//         snackBarShown = true;
+//       }
+//       return await serverConnecting.future;
+//     },
+//   );
 
-  if (snackBarShown) {
-    snackBar.remove();
-  }
+//   if (snackBarShown) {
+//     snackBar.remove();
+//   }
 
-  server.on("new address", (data) {
-    address = data;
-  });
-}
+//   server.on("new address", (data) {
+//     address = data;
+//   });
+// }
 
 Future<void> connectToFireService({BuildContext? context}) async {
   Completer<String> serviceConnecting = Completer();
@@ -136,6 +135,17 @@ Future<void> connectToFireService({BuildContext? context}) async {
     serviceConnecting.complete(service.id);
   });
 
+  service.on("version", (data) {
+    FireUI.currentServiceVersion = Version.fromString(data);
+  });
+
+  service.on("serverConnected", (data) async {
+    await FireAccount.isLoggedIn();
+    if (FireAccount.current != null) {
+      FireServer.send("login", FireAccount.current!.uid);
+    }
+  });
+
   await serviceConnecting.future.timeout(
     Duration(seconds: 3),
     onTimeout: () async {
@@ -147,15 +157,17 @@ Future<void> connectToFireService({BuildContext? context}) async {
 
 class FireServer {
   static void onReceiveEvent(String event, EventHandler handler) {
-    server.on(event, (data) => handler(data));
+    service.emit("serverOn", event);
+    service.on("recieveEvent#$event", handler);
   }
 
   static void onReceiveEventOnce(String event, EventHandler handler) {
-    server.once(event, (data) => handler(data));
+    service.emit("serverOnce", event);
+    service.once("recieveEvent$event", handler);
   }
 
   static void send(String event, dynamic data) {
-    server.emit(event, data);
+    service.emit("sendEventToServer", {"event": event, "data": data});
   }
 }
 

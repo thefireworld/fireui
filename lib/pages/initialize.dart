@@ -37,11 +37,6 @@ class _FireInitializePageState extends State<FireInitializePage> {
     );
 
     Future.delayed(Duration(milliseconds: 1), () async {
-      if (!widget.dontConnectToFireServer) {
-        setState(() => loadingText = "Fire Server에 연결하는중...");
-        await connectToFireServer(context: context);
-      }
-
       if (widget.initializeStatus == InitializeStatus.differentVersion) {
         showDialog(
           context: context,
