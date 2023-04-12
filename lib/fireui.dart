@@ -131,8 +131,8 @@ Future<void> connectToFireService({BuildContext? context}) async {
   service.onConnect((_) {
     log("service Connected");
     serviceConnected = true;
-    _rebuildController?.rebuild();
-    serviceConnecting.complete(service.id);
+
+    if (!serviceConnecting.isCompleted) serviceConnecting.complete(service.id);
   });
 
   service.on("version", (data) {
@@ -172,8 +172,12 @@ class FireServer {
 }
 
 class FireService {
+  static void onConnected(EventHandler handler) {
+    service.onConnect(handler);
+  }
+
   static void onReceiveEvent(String event, EventHandler handler) {
-    service.on(event, (data) => handler(data));
+    service.on(event, handler);
   }
 
   static void send(String event, dynamic data) {
