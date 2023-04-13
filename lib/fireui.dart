@@ -158,15 +158,18 @@ Future<void> connectToFireService({BuildContext? context}) async {
 class FireServer {
   static void onReceiveEvent(String event, EventHandler handler) {
     service.emit("serverOn", event);
+    service.off("recieveEvent#$event");
     service.on("recieveEvent#$event", handler);
   }
 
   static void onReceiveEventOnce(String event, EventHandler handler) {
     service.emit("serverOnce", event);
+    service.off("recieveEvent#$event");
     service.once("recieveEvent$event", handler);
   }
 
   static void send(String event, dynamic data) {
+    log("Send $data");
     service.emit("sendEventToServer", {"event": event, "data": data});
   }
 }
