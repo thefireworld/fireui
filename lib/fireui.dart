@@ -169,7 +169,6 @@ class FireServer {
   }
 
   static void send(String event, dynamic data) {
-    log("Send $data");
     service.emit("sendEventToServer", {"event": event, "data": data});
   }
 }
