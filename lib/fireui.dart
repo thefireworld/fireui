@@ -38,11 +38,11 @@ String FIRE_DINGDONG = "dongdong";
 String FIRE_LOGIN = "login";
 
 class FireUI {
-  static Version? requiredServiceVersion;
-  static Version? currentServiceVersion;
+  static String? requiredServiceVersion;
+  static String? currentServiceVersion;
 
   static Future<InitializeStatus> initialize(List<String> arguments,
-      {required String identifier, Version? requiredServiceVersion}) async {
+      {required String identifier, String? requiredServiceVersion}) async {
     FireUI.requiredServiceVersion = requiredServiceVersion;
 
     await WindowsSingleInstance.ensureSingleInstance(arguments, identifier);
@@ -52,8 +52,7 @@ class FireUI {
         "${dotFireDirectory.directory.path}/service/fireservice.exe",
         ["--version"],
       );
-      Version currentServiceVersion =
-          Version.fromString(result.stdout.toString());
+      String currentServiceVersion = result.stdout.toString();
       FireUI.currentServiceVersion = currentServiceVersion;
       if (currentServiceVersion != requiredServiceVersion) {
         log("Programs and services have different versions.");
@@ -148,7 +147,7 @@ Future<void> connectToFireService({BuildContext? context}) async {
   });
 
   service.on("version", (data) {
-    FireUI.currentServiceVersion = Version.fromString(data);
+    FireUI.currentServiceVersion = data;
   });
 
   service.on("serverConnected", (data) async {
