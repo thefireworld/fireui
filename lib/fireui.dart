@@ -65,7 +65,7 @@ class FireUI {
   }
 
   static Future<void> openFireProgram(String id) async {
-    await Process.runSync(
+    await Process.run(
       "${dotFireDirectory.directory.path}/$id/$id.exe",
       [],
     );
