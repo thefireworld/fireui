@@ -32,6 +32,11 @@ enum InitializeStatus {
   differentVersion,
 }
 
+String FIRE_SETTINGS = "settings";
+String FIRE_INSTALLER = "installer";
+String FIRE_DINGDONG = "dongdong";
+String FIRE_LOGIN = "login";
+
 class FireUI {
   static Version? requiredServiceVersion;
   static Version? currentServiceVersion;
@@ -57,6 +62,13 @@ class FireUI {
     }
 
     return InitializeStatus.success;
+  }
+
+  static Future<void> openFireProgram(String id) async {
+    await Process.runSync(
+      "${dotFireDirectory.directory.path}/$id/$id.exe",
+      [],
+    );
   }
 }
 
