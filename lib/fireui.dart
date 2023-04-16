@@ -180,7 +180,7 @@ class FireServer {
   static void onReceiveEventOnce(String event, EventHandler handler) {
     service.emit("serverOnce", event);
     service.off("recieveEvent#$event");
-    service.once("recieveEvent$event", handler);
+    service.once("recieveEvent#$event", handler);
   }
 
   static void send(String event, dynamic data) {
