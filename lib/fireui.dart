@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:dart_app_data/dart_app_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,9 +36,14 @@ String FIRE_INSTALLER = "installer";
 String FIRE_DINGDONG = "dongdong";
 String FIRE_LOGIN = "login";
 
+class FireApp {
+  String? version, buildNumber;
+}
+
 class FireUI {
   static String? requiredServiceVersion;
   static String? currentServiceVersion;
+  static FireApp app = FireApp();
 
   static Future<InitializeStatus> initialize(List<String> arguments,
       {required String identifier, String? requiredServiceVersion}) async {
@@ -52,8 +56,8 @@ class FireUI {
         "${dotFireDirectory.directory.path}/service/fireservice.exe",
         ["--version"],
       );
-      String currentServiceVersion = result.stdout.toString();
-      FireUI.currentServiceVersion = currentServiceVersion;
+      String currentServiceVersion = result.stdout.toString().trim();
+      FireUI.currentServiceVersion = currentServiceVersion.trim();
       if (currentServiceVersion != requiredServiceVersion) {
         log("Programs and services have different versions.");
         return InitializeStatus.differentVersion;
